@@ -2,11 +2,14 @@ package com.pps.sleepcalc;
 
 import android.os.Bundle;
 import android.app.Activity;
+import android.content.Intent;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 
 public class MainActivity extends Activity {
+	
+	private Intent sensorService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,7 +26,15 @@ public class MainActivity extends Activity {
     }
     
     public void startClicked(View view){
-    	Log.e("SleepCalcTag", "button works");
+    	//start service
+    	sensorService = new Intent(this, sensorService.class);
+    	startService(sensorService);
+    	Log.e("SleepCalcTag", "start clicked");
+    }
+    
+    public void stopClicked(View view){
+    	stopService(sensorService);
+    	Log.e("SleepCalcTag", "stop clicked");
     }
     
 }
