@@ -12,4 +12,14 @@
         android:text="@string/start" 
         android:onClick="startClicked"/>
 
+    <Button
+        android:id="@+id/stop_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/start_button"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="72dp"
+        android:text="@string/stop" 
+        android:onClick="stopClicked"/>
+
 </RelativeLayout>
