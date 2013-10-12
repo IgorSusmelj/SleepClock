@@ -58,10 +58,10 @@ public class sensorService extends Service implements SensorEventListener {
 		mRotation = mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
 		
 		//register sensor with specific delay
-		mSensorManager.registerListener(this, mGyro, SensorManager.SENSOR_DELAY_FASTEST);
-		mSensorManager.registerListener(this, mAccelo, SensorManager.SENSOR_DELAY_FASTEST);
-		mSensorManager.registerListener(this, mLinear, SensorManager.SENSOR_DELAY_FASTEST);
-		mSensorManager.registerListener(this, mRotation, SensorManager.SENSOR_DELAY_FASTEST);
+		mSensorManager.registerListener(this, mGyro, 500000);
+		mSensorManager.registerListener(this, mAccelo, 500000);
+		mSensorManager.registerListener(this, mLinear, 500000);
+		mSensorManager.registerListener(this, mRotation, 500000);
 		
 		//initalise file io
 		String state = Environment.getExternalStorageState();
@@ -70,10 +70,10 @@ public class sensorService extends Service implements SensorEventListener {
 			Log.e("SleepCalcServiceTag", "output file created in"+getExternalFilesDir(null));
 			
 			try {
-				acceloOut = new BufferedOutputStream(new FileOutputStream(new File(getExternalFilesDir(null),"accelo.txt")));
-				linearOut = new BufferedOutputStream(new FileOutputStream(new File(getExternalFilesDir(null),"linear.txt")));
-				gyroOut = new BufferedOutputStream(new FileOutputStream(new File(getExternalFilesDir(null),"gyro.txt")));
-				rotationOut = new BufferedOutputStream(new FileOutputStream(new File(getExternalFilesDir(null),"rotation.txt")));
+				acceloOut = new BufferedOutputStream(new FileOutputStream(new File(getExternalFilesDir(null),"accelo.csv")));
+				linearOut = new BufferedOutputStream(new FileOutputStream(new File(getExternalFilesDir(null),"linear.csv")));
+				gyroOut = new BufferedOutputStream(new FileOutputStream(new File(getExternalFilesDir(null),"gyro.csv")));
+				rotationOut = new BufferedOutputStream(new FileOutputStream(new File(getExternalFilesDir(null),"rotation.csv")));
 				
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
@@ -103,7 +103,14 @@ public class sensorService extends Service implements SensorEventListener {
 			
 			//wirte to specific IO stream
 			try {
-				acceloOut.write(event.values.toString().getBytes());
+				
+				float x,y,z;
+				
+				x=event.values[0];
+				y=event.values[1];
+				z=event.values[2];
+				
+				acceloOut.write((Float.toString(x)+","+Float.toString(y)+","+Float.toString(z)+";").getBytes());
 				Log.e("SleepCalcServiceTag", "Wrote from acceloSensor");
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
