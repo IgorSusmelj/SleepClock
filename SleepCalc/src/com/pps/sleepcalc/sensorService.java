@@ -6,6 +6,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
 
 import android.media.MediaScannerConnection;
 import android.net.Uri;
@@ -31,7 +33,10 @@ public class sensorService extends Service implements SensorEventListener {
 	private Sensor mLinear;
 	private Sensor mRotation;
 	
-	private OutputStream fos;
+	private BufferedOutputStream acceloOut;
+	private BufferedOutputStream linearOut;
+	private BufferedOutputStream gyroOut;
+	private BufferedOutputStream rotationOut;
 	
 	
 
@@ -57,25 +62,15 @@ public class sensorService extends Service implements SensorEventListener {
 		if(Environment.MEDIA_MOUNTED.equals(state)){
 			//everyting's fine
 			Log.e("SleepCalcServiceTag", "output file created in"+getExternalFilesDir(null));
-			File file;
-			file = new File(getExternalFilesDir(null),"filename.txt");
+			
 			try {
-				fos = new BufferedOutputStream(new FileOutputStream(file));
-				fos.write(78);
+				acceloOut = new BufferedOutputStream(new FileOutputStream(new File(getExternalFilesDir(null),"accelo.txt")));
+				linearOut = new BufferedOutputStream(new FileOutputStream(new File(getExternalFilesDir(null),"linear.txt")));
+				gyroOut = new BufferedOutputStream(new FileOutputStream(new File(getExternalFilesDir(null),"gyro.txt")));
+				rotationOut = new BufferedOutputStream(new FileOutputStream(new File(getExternalFilesDir(null),"rotation.txt")));
+				
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}finally{
-				if(fos!=null){
-					try {
-						fos.close();
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
 			}
 			
 			MediaScannerConnection.scanFile(this.getApplicationContext(), new String[]{getExternalFilesDir(null).toString()}, null, 
@@ -104,8 +99,16 @@ public class sensorService extends Service implements SensorEventListener {
 
 	@Override
 	public void onSensorChanged(SensorEvent event) {
+		
 		switch(event.sensor.getType()){
 		case Sensor.TYPE_ACCELEROMETER:
+			try {
+				acceloOut.write(event.values.toString().getBytes());
+				Log.e("SleepCalcServiceTag", "Wrote from acceloSensor");
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			break;
 		case Sensor.TYPE_GYROSCOPE:
 			break;
@@ -119,10 +122,21 @@ public class sensorService extends Service implements SensorEventListener {
 				
 		}
 		
+		
 	}
 	
 	@Override
 	public void onDestroy(){
+		
+		mSensorManager.unregisterListener(this);
+		
+		try {
+			acceloOut.flush();
+			acceloOut.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		Log.e("SleepCalcServiceTag", "Service stopped");
 	}
 	
