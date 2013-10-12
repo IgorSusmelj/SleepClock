@@ -112,6 +112,7 @@ public class sensorService extends Service implements SensorEventListener {
 				
 				acceloOut.write((Float.toString(x)+","+Float.toString(y)+","+Float.toString(z)+";").getBytes());
 				Log.e("SleepCalcServiceTag", "Wrote from acceloSensor");
+				
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
