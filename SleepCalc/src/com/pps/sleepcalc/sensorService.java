@@ -1,12 +1,19 @@
 package com.pps.sleepcalc;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 
+import android.media.MediaScannerConnection;
+import android.net.Uri;
 import android.os.Environment;
+import android.os.IBinder;
 
 import android.app.IntentService;
+import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.hardware.Sensor;
@@ -15,7 +22,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.util.Log;
 
-public class sensorService extends IntentService implements SensorEventListener{
+public class sensorService extends Service implements SensorEventListener {
 
 	private SensorManager mSensorManager;
 	
@@ -24,15 +31,12 @@ public class sensorService extends IntentService implements SensorEventListener{
 	private Sensor mLinear;
 	private Sensor mRotation;
 	
-	private File fos;
+	private OutputStream fos;
 	
 	
-	public sensorService(String name) {
-		super(name);
-	}
 
 	@Override
-	protected void onHandleIntent(Intent intent) {
+	public int onStartCommand(Intent intent, int flags, int startId) {
 		Log.e("SleepCalcServiceTag", "Service started");
 		
 		//set up sensors 
@@ -52,23 +56,44 @@ public class sensorService extends IntentService implements SensorEventListener{
 		String state = Environment.getExternalStorageState();
 		if(Environment.MEDIA_MOUNTED.equals(state)){
 			//everyting's fine
-			fos = new File(getExternalFilesDir("SleepCalc"),"filename.txt");
+			Log.e("SleepCalcServiceTag", "output file created in"+getExternalFilesDir(null));
+			File file;
+			file = new File(getExternalFilesDir(null),"filename.txt");
+			try {
+				fos = new BufferedOutputStream(new FileOutputStream(file));
+				fos.write(78);
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}finally{
+				if(fos!=null){
+					try {
+						fos.close();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
+			
+			MediaScannerConnection.scanFile(this.getApplicationContext(), new String[]{getExternalFilesDir(null).toString()}, null, 
+					new MediaScannerConnection.OnScanCompletedListener() {
+						@Override
+						public void onScanCompleted(String path, Uri uri) {
+							Log.e("SleepCalcServiceTag", "Media scanner found file in: "+path);
+							// TODO Auto-generated method stub
+							
+						}
+					});
 		}else{
 			//no permission to write or no external storage found
 		}
 		
 		
-		//never ending loop!?
-		while(true){
-			Log.e("SleepCalcServiceTag", "Service still running...");
-			try {
-				Thread.sleep(2000);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
 		
+		return Service.START_STICKY;
 	}
 
 	@Override
@@ -94,6 +119,17 @@ public class sensorService extends IntentService implements SensorEventListener{
 				
 		}
 		
+	}
+	
+	@Override
+	public void onDestroy(){
+		Log.e("SleepCalcServiceTag", "Service stopped");
+	}
+	
+	@Override
+	public IBinder onBind(Intent arg0) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
