@@ -26,13 +26,18 @@ import android.util.Log;
 
 public class sensorService extends Service implements SensorEventListener {
 
+	//my sensor manager
 	private SensorManager mSensorManager;
 	
+	
+	//my sensors
 	private Sensor mGyro;
 	private Sensor mAccelo;
 	private Sensor mLinear;
 	private Sensor mRotation;
 	
+	
+	//my IO streams for saving data
 	private BufferedOutputStream acceloOut;
 	private BufferedOutputStream linearOut;
 	private BufferedOutputStream gyroOut;
@@ -52,6 +57,7 @@ public class sensorService extends Service implements SensorEventListener {
 		mLinear = mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
 		mRotation = mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
 		
+		//register sensor with specific delay
 		mSensorManager.registerListener(this, mGyro, SensorManager.SENSOR_DELAY_FASTEST);
 		mSensorManager.registerListener(this, mAccelo, SensorManager.SENSOR_DELAY_FASTEST);
 		mSensorManager.registerListener(this, mLinear, SensorManager.SENSOR_DELAY_FASTEST);
@@ -73,15 +79,6 @@ public class sensorService extends Service implements SensorEventListener {
 				e.printStackTrace();
 			}
 			
-			MediaScannerConnection.scanFile(this.getApplicationContext(), new String[]{getExternalFilesDir(null).toString()}, null, 
-					new MediaScannerConnection.OnScanCompletedListener() {
-						@Override
-						public void onScanCompleted(String path, Uri uri) {
-							Log.e("SleepCalcServiceTag", "Media scanner found file in: "+path);
-							// TODO Auto-generated method stub
-							
-						}
-					});
 		}else{
 			//no permission to write or no external storage found
 		}
@@ -100,8 +97,11 @@ public class sensorService extends Service implements SensorEventListener {
 	@Override
 	public void onSensorChanged(SensorEvent event) {
 		
+		//check sensor type
 		switch(event.sensor.getType()){
 		case Sensor.TYPE_ACCELEROMETER:
+			
+			//wirte to specific IO stream
 			try {
 				acceloOut.write(event.values.toString().getBytes());
 				Log.e("SleepCalcServiceTag", "Wrote from acceloSensor");
@@ -128,8 +128,22 @@ public class sensorService extends Service implements SensorEventListener {
 	@Override
 	public void onDestroy(){
 		
+		//start media scanner to search for the new file so it gets displayed
+		MediaScannerConnection.scanFile(this.getApplicationContext(), new String[]{getExternalFilesDir(null).toString()}, null, 
+			new MediaScannerConnection.OnScanCompletedListener() {
+				@Override
+				public void onScanCompleted(String path, Uri uri) {
+					Log.e("SleepCalcServiceTag", "Media scanner found file in: "+path);
+					// TODO Auto-generated method stub
+					
+				}
+		});
+		
+		//unregister sensor so no more events gets triggered
 		mSensorManager.unregisterListener(this);
 		
+		
+		//flush and close all IO streams so all data gets written correctly
 		try {
 			acceloOut.flush();
 			acceloOut.close();
