@@ -26,13 +26,14 @@ public class MainActivity extends Activity {
     }
     
     public void startClicked(View view){
-    	//start service
+    	//create and start service
     	sensorService = new Intent(this, sensorService.class);
     	startService(sensorService);
     	Log.e("SleepCalcTag", "start clicked");
     }
     
     public void stopClicked(View view){
+    	//stop service
     	stopService(sensorService);
     	Log.e("SleepCalcTag", "stop clicked");
     }
