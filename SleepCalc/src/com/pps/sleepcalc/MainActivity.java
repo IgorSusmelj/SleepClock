@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
+import android.widget.Toast;
 
 public class MainActivity extends Activity {
 	
@@ -29,12 +30,18 @@ public class MainActivity extends Activity {
     	//create and start service
     	sensorService = new Intent(this, sensorService.class);
     	startService(sensorService);
+    	
+    	//Toast and log output for user/developper notification
+    	Toast.makeText(this, "Service started", Toast.LENGTH_SHORT).show();
     	Log.e("SleepCalcTag", "start clicked");
     }
     
     public void stopClicked(View view){
     	//stop service
     	stopService(sensorService);
+    	
+    	//Toast and log output for user/developper notification
+    	Toast.makeText(this, "Service stopped", Toast.LENGTH_SHORT).show();
     	Log.e("SleepCalcTag", "stop clicked");
     }
     
