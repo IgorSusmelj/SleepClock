@@ -13,6 +13,7 @@ import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Environment;
 import android.os.IBinder;
+import android.os.PowerManager;
 
 import android.app.IntentService;
 import android.app.Service;
@@ -28,6 +29,9 @@ public class sensorService extends Service implements SensorEventListener {
 
 	//my sensor manager
 	private SensorManager mSensorManager;
+	
+	//power manager
+	private PowerManager.WakeLock wakelock;
 	
 	
 	//my sensors
@@ -84,6 +88,11 @@ public class sensorService extends Service implements SensorEventListener {
 		}
 		
 		
+		//initiate WakeLock
+		PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+		wakelock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "wake tag");
+		
+		wakelock.acquire();
 		
 		return Service.START_STICKY;
 	}
@@ -219,6 +228,8 @@ public class sensorService extends Service implements SensorEventListener {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		wakelock.release();
 		Log.e("SleepCalcServiceTag", "Service stopped");
 	}
 	
