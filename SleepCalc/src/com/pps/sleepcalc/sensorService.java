@@ -111,7 +111,7 @@ public class sensorService extends Service implements SensorEventListener {
 				z=event.values[2];
 				
 				acceloOut.write((Float.toString(x)+","+Float.toString(y)+","+Float.toString(z)+";").getBytes());
-				Log.e("SleepCalcServiceTag", "Wrote from accelo Sensor");
+				//Log.e("SleepCalcServiceTag", "Wrote from accelo Sensor");
 				
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
@@ -130,7 +130,7 @@ public class sensorService extends Service implements SensorEventListener {
 				z=event.values[2];
 				
 				gyroOut.write((Float.toString(x)+","+Float.toString(y)+","+Float.toString(z)+";").getBytes());
-				Log.e("SleepCalcServiceTag", "Wrote from gyro Sensor");
+				//Log.e("SleepCalcServiceTag", "Wrote from gyro Sensor");
 				
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
@@ -149,7 +149,7 @@ public class sensorService extends Service implements SensorEventListener {
 				z=event.values[2];
 				
 				rotationOut.write((Float.toString(x)+","+Float.toString(y)+","+Float.toString(z)+";").getBytes());
-				Log.e("SleepCalcServiceTag", "Wrote from rotation Sensor");
+				//Log.e("SleepCalcServiceTag", "Wrote from rotation Sensor");
 				
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
@@ -168,7 +168,7 @@ public class sensorService extends Service implements SensorEventListener {
 				z=event.values[2];
 				
 				linearOut.write((Float.toString(x)+","+Float.toString(y)+","+Float.toString(z)+";").getBytes());
-				Log.e("SleepCalcServiceTag", "Wrote from linear Sensor");
+				//Log.e("SleepCalcServiceTag", "Wrote from linear Sensor");
 				
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
