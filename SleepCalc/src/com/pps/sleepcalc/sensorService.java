@@ -70,7 +70,7 @@ public class sensorService extends Service implements SensorEventListener {
 			Log.e("SleepCalcServiceTag", "output file created in"+getExternalFilesDir(null));
 			
 			try {
-				acceloOut = new BufferedOutputStream(new FileOutputStream(new File(getExternalFilesDir(null),"accelo.csv")));
+				acceloOut = new BufferedOutputStream(new FileOutputStream(new File(getExternalFilesDir(null),"accelo.csv"),false));
 				linearOut = new BufferedOutputStream(new FileOutputStream(new File(getExternalFilesDir(null),"linear.csv")));
 				gyroOut = new BufferedOutputStream(new FileOutputStream(new File(getExternalFilesDir(null),"gyro.csv")));
 				rotationOut = new BufferedOutputStream(new FileOutputStream(new File(getExternalFilesDir(null),"rotation.csv")));
@@ -111,7 +111,7 @@ public class sensorService extends Service implements SensorEventListener {
 				z=event.values[2];
 				
 				acceloOut.write((Float.toString(x)+","+Float.toString(y)+","+Float.toString(z)+";").getBytes());
-				Log.e("SleepCalcServiceTag", "Wrote from acceloSensor");
+				Log.e("SleepCalcServiceTag", "Wrote from accelo Sensor");
 				
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
@@ -119,10 +119,61 @@ public class sensorService extends Service implements SensorEventListener {
 			}
 			break;
 		case Sensor.TYPE_GYROSCOPE:
+			
+			//wirte to specific IO stream
+			try {
+				
+				float x,y,z;
+				
+				x=event.values[0];
+				y=event.values[1];
+				z=event.values[2];
+				
+				gyroOut.write((Float.toString(x)+","+Float.toString(y)+","+Float.toString(z)+";").getBytes());
+				Log.e("SleepCalcServiceTag", "Wrote from gyro Sensor");
+				
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			break;
 		case Sensor.TYPE_ROTATION_VECTOR:
+			
+			//wirte to specific IO stream
+			try {
+				
+				float x,y,z;
+				
+				x=event.values[0];
+				y=event.values[1];
+				z=event.values[2];
+				
+				rotationOut.write((Float.toString(x)+","+Float.toString(y)+","+Float.toString(z)+";").getBytes());
+				Log.e("SleepCalcServiceTag", "Wrote from rotation Sensor");
+				
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			break;
 		case Sensor.TYPE_LINEAR_ACCELERATION:
+			
+			//wirte to specific IO stream
+			try {
+				
+				float x,y,z;
+				
+				x=event.values[0];
+				y=event.values[1];
+				z=event.values[2];
+				
+				linearOut.write((Float.toString(x)+","+Float.toString(y)+","+Float.toString(z)+";").getBytes());
+				Log.e("SleepCalcServiceTag", "Wrote from linear Sensor");
+				
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			break;
 		default:
 			Log.e("SleepCalcServiceTag", "None of my sensors!?!?");
@@ -155,6 +206,15 @@ public class sensorService extends Service implements SensorEventListener {
 		try {
 			acceloOut.flush();
 			acceloOut.close();
+			
+			gyroOut.flush();
+			gyroOut.close();
+			
+			rotationOut.flush();
+			rotationOut.close();
+			
+			linearOut.flush();
+			linearOut.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
