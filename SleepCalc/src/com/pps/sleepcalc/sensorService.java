@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
+import java.text.DateFormat;
+import java.util.Date;
 
 import android.media.MediaScannerConnection;
 import android.net.Uri;
@@ -46,8 +48,16 @@ public class sensorService extends Service implements SensorEventListener {
 	private BufferedOutputStream linearOut;
 	private BufferedOutputStream gyroOut;
 	private BufferedOutputStream rotationOut;
+	private BufferedOutputStream timeLogOut;
 	
+	//counter for each sensor
+	private int acceloCount=0;
+	private int linearCount=0;
+	private int gyroCount=0;
+	private int rotationCount=0;
 	
+	private final static int timeLogCounterMAX=10000;
+	private int timeLogCounter=timeLogCounterMAX;
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
@@ -78,6 +88,8 @@ public class sensorService extends Service implements SensorEventListener {
 				linearOut = new BufferedOutputStream(new FileOutputStream(new File(getExternalFilesDir(null),"linear.csv")),131072);
 				gyroOut = new BufferedOutputStream(new FileOutputStream(new File(getExternalFilesDir(null),"gyro.csv")),131072);
 				rotationOut = new BufferedOutputStream(new FileOutputStream(new File(getExternalFilesDir(null),"rotation.csv")),131072);
+				
+				timeLogOut = new BufferedOutputStream(new FileOutputStream(new File(getExternalFilesDir(null),"timelog.csv")));
 				
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
@@ -112,7 +124,7 @@ public class sensorService extends Service implements SensorEventListener {
 			
 			//wirte to specific IO stream
 			try {
-				
+				//define temp variables for x,y,z component of value vector
 				float x,y,z;
 				
 				x=event.values[0];
@@ -120,6 +132,8 @@ public class sensorService extends Service implements SensorEventListener {
 				z=event.values[2];
 				
 				acceloOut.write((Float.toString(x)+","+Float.toString(y)+","+Float.toString(z)+";").getBytes());
+				acceloCount++;
+
 				//Log.e("SleepCalcServiceTag", "Wrote from accelo Sensor");
 				
 			} catch (IOException e) {
@@ -139,6 +153,16 @@ public class sensorService extends Service implements SensorEventListener {
 				z=event.values[2];
 				
 				gyroOut.write((Float.toString(x)+","+Float.toString(y)+","+Float.toString(z)+";").getBytes());
+				gyroCount++;
+				
+				//set perTimeCounter down and check if 0 or below
+				timeLogCounter--;
+				
+				if(timeLogCounter<=0){
+					//output actual time and sensor counters
+					timeLogOut.write((DateFormat.getTimeInstance(DateFormat.SHORT).format(new Date()).toString()+","+Integer.toString(acceloCount)+","+Integer.toString(gyroCount)+","+Integer.toString(rotationCount)+","+Integer.toString(linearCount)+";").getBytes());
+					timeLogCounter=timeLogCounterMAX;
+				}
 				//Log.e("SleepCalcServiceTag", "Wrote from gyro Sensor");
 				
 			} catch (IOException e) {
@@ -158,6 +182,7 @@ public class sensorService extends Service implements SensorEventListener {
 				z=event.values[2];
 				
 				rotationOut.write((Float.toString(x)+","+Float.toString(y)+","+Float.toString(z)+";").getBytes());
+				rotationCount++;
 				//Log.e("SleepCalcServiceTag", "Wrote from rotation Sensor");
 				
 			} catch (IOException e) {
@@ -177,6 +202,7 @@ public class sensorService extends Service implements SensorEventListener {
 				z=event.values[2];
 				
 				linearOut.write((Float.toString(x)+","+Float.toString(y)+","+Float.toString(z)+";").getBytes());
+				linearCount++;
 				//Log.e("SleepCalcServiceTag", "Wrote from linear Sensor");
 				
 			} catch (IOException e) {
@@ -224,6 +250,9 @@ public class sensorService extends Service implements SensorEventListener {
 			
 			linearOut.flush();
 			linearOut.close();
+			
+			timeLogOut.flush();
+			timeLogOut.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
