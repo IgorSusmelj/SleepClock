@@ -31,14 +31,15 @@ public class sensorService extends Service implements SensorEventListener {
 
 	//constants
 	private final static int timeLogCounterMAX=10000;
-	private static int deltaOutTrigger=100;
+	private final static int deltaOutTrigger=100;
+	private final static int sensorUpdateInterval = 500000;
 	
 	//triggers for sensor data
-	private final static float LinearSensorTrigger = 0.3f;
+	private final static float LinearSensorTrigger = 0.3f;//change this value for lower or higher threshold 
 	private final static float GyroSensorTrigger   = 0.1f;
 	
 	//sensor data buffer for computing average
-	private final static int SensorDataBuffMax=200; //change this value for better average values
+	private final static int SensorDataBuffMax=1000; //change this value for better average values
 	
 	//my sensor manager
 	private SensorManager mSensorManager;
@@ -76,10 +77,11 @@ public class sensorService extends Service implements SensorEventListener {
 	private int gyroCount=0;
 	private int rotationCount=0;
 	
-	
+	//counter for the data buffer
 	private int LinearDataCounter = 0;
-	
 	private int GyroDataCounter = 0;
+	
+	//buffer for the sensor data
 	private float[] linearDataBuffX = new float[SensorDataBuffMax];
 	private float[] linearDataBuffY = new float[SensorDataBuffMax];
 	private float[] linearDataBuffZ = new float[SensorDataBuffMax];
@@ -114,12 +116,12 @@ public class sensorService extends Service implements SensorEventListener {
 		mRotation = mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
 		
 		//register sensor with specific delay
-		mSensorManager.registerListener(this, mGyro, 500000);
-		mSensorManager.registerListener(this, mAccelo, 500000);
-		mSensorManager.registerListener(this, mLinear, 500000);
-		mSensorManager.registerListener(this, mRotation, 500000);
+		mSensorManager.registerListener(this, mGyro, sensorUpdateInterval);
+		mSensorManager.registerListener(this, mAccelo, sensorUpdateInterval);
+		mSensorManager.registerListener(this, mLinear, sensorUpdateInterval);
+		mSensorManager.registerListener(this, mRotation, sensorUpdateInterval);
 		
-		//initalise file io
+		//initalise file IO
 		String state = Environment.getExternalStorageState();
 		if(Environment.MEDIA_MOUNTED.equals(state)){
 			//everyting's fine
@@ -202,17 +204,17 @@ public class sensorService extends Service implements SensorEventListener {
 					if(Math.abs(x-gyroAverageX)>GyroSensorTrigger){
 						//Motion detected
 						lastGyroOut=gyroCount;
-						resGyroOut.write((Float.toString(gyroCount)+","+Float.toString(x)+","+Float.toString(y)+","+Float.toString(z)+";").getBytes());
+						resGyroOut.write((Integer.toString(gyroCount)+","+Float.toString(x)+","+Float.toString(y)+","+Float.toString(z)+";").getBytes());
 						Log.e("SleepCalcServiceTag", "Motion detected by gyroX: "+x);
 					}else if(Math.abs(y-gyroAverageY)>GyroSensorTrigger){
 						//Motion detected
 						lastGyroOut=gyroCount;
-						resGyroOut.write((Float.toString(gyroCount)+","+Float.toString(x)+","+Float.toString(y)+","+Float.toString(z)+";").getBytes());
+						resGyroOut.write((Integer.toString(gyroCount)+","+Float.toString(x)+","+Float.toString(y)+","+Float.toString(z)+";").getBytes());
 						Log.e("SleepCalcServiceTag", "Motion detected by gyroY: "+y);
 					}else if(Math.abs(z-gyroAverageZ)>GyroSensorTrigger){
 						//Motion detected
 						lastGyroOut=gyroCount;
-						resGyroOut.write((Float.toString(gyroCount)+","+Float.toString(x)+","+Float.toString(y)+","+Float.toString(z)+";").getBytes());
+						resGyroOut.write((Integer.toString(gyroCount)+","+Float.toString(x)+","+Float.toString(y)+","+Float.toString(z)+";").getBytes());
 						Log.e("SleepCalcServiceTag", "Motion detected by gyroZ: "+z);
 					}
 				}				
@@ -289,17 +291,17 @@ public class sensorService extends Service implements SensorEventListener {
 					if(Math.abs(x-linearAverageX)>LinearSensorTrigger){
 						//Motion detected
 						lastLinearOut=linearCount;
-						resLinearOut.write((Float.toString(linearCount)+","+Float.toString(x)+","+Float.toString(y)+","+Float.toString(z)+";").getBytes());
+						resLinearOut.write((Integer.toString(linearCount)+","+Float.toString(x)+","+Float.toString(y)+","+Float.toString(z)+";").getBytes());
 						Log.e("SleepCalcServiceTag", "Motion detected by LinearX: "+x);
 					}else if(Math.abs(y-linearAverageY)>LinearSensorTrigger){
 						//Motion detected
 						lastLinearOut=linearCount;
-						resLinearOut.write((Float.toString(linearCount)+","+Float.toString(x)+","+Float.toString(y)+","+Float.toString(z)+";").getBytes());
+						resLinearOut.write((Integer.toString(linearCount)+","+Float.toString(x)+","+Float.toString(y)+","+Float.toString(z)+";").getBytes());
 						Log.e("SleepCalcServiceTag", "Motion detected by LinearY: "+y);
 					}else if(Math.abs(z-linearAverageZ)>LinearSensorTrigger){
 						//Motion detected
 						lastLinearOut=linearCount;
-						resLinearOut.write((Float.toString(linearCount)+","+Float.toString(x)+","+Float.toString(y)+","+Float.toString(z)+";").getBytes());
+						resLinearOut.write((Integer.toString(linearCount)+","+Float.toString(x)+","+Float.toString(y)+","+Float.toString(z)+";").getBytes());
 						Log.e("SleepCalcServiceTag", "Motion detected by LinearZ: "+z);
 					}
 				}
