@@ -29,6 +29,17 @@ import android.util.Log;
 
 public class sensorService extends Service implements SensorEventListener {
 
+	//constants
+	private final static int timeLogCounterMAX=10000;
+	private static int deltaOutTrigger=100;
+	
+	//triggers for sensor data
+	private final static float LinearSensorTrigger = 0.3f;
+	private final static float GyroSensorTrigger   = 0.1f;
+	
+	//sensor data buffer for computing average
+	private final static int SensorDataBuffMax=200; //change this value for better average values
+	
 	//my sensor manager
 	private SensorManager mSensorManager;
 	
@@ -58,7 +69,6 @@ public class sensorService extends Service implements SensorEventListener {
 	private int lastLinearOut=0;
 	private int lastGyroOut=0;
 	
-	private static int deltaOutTrigger=100;
 	
 	//counter for each sensor
 	private int acceloCount=0;
@@ -66,12 +76,7 @@ public class sensorService extends Service implements SensorEventListener {
 	private int gyroCount=0;
 	private int rotationCount=0;
 	
-	//triggers for sensor data
-	private final static float LinearSensorTrigger = 0.3f;
-	private final static float GyroSensorTrigger   = 0.1f;
 	
-	//sensor data buffer for computing average
-	private final static int SensorDataBuffMax=200; //change this value for better average values
 	private int LinearDataCounter = 0;
 	
 	private int GyroDataCounter = 0;
@@ -93,7 +98,7 @@ public class sensorService extends Service implements SensorEventListener {
 	private float gyroAverageY=0.0f;
 	private float gyroAverageZ=0.0f;
 	
-	private final static int timeLogCounterMAX=10000;
+
 	private int timeLogCounter=timeLogCounterMAX;
 
 	@Override
@@ -197,14 +202,17 @@ public class sensorService extends Service implements SensorEventListener {
 					if(Math.abs(x-gyroAverageX)>GyroSensorTrigger){
 						//Motion detected
 						lastGyroOut=gyroCount;
+						resGyroOut.write((Float.toString(gyroCount)+","+Float.toString(x)+","+Float.toString(y)+","+Float.toString(z)+";").getBytes());
 						Log.e("SleepCalcServiceTag", "Motion detected by gyroX: "+x);
 					}else if(Math.abs(y-gyroAverageY)>GyroSensorTrigger){
 						//Motion detected
 						lastGyroOut=gyroCount;
+						resGyroOut.write((Float.toString(gyroCount)+","+Float.toString(x)+","+Float.toString(y)+","+Float.toString(z)+";").getBytes());
 						Log.e("SleepCalcServiceTag", "Motion detected by gyroY: "+y);
 					}else if(Math.abs(z-gyroAverageZ)>GyroSensorTrigger){
 						//Motion detected
 						lastGyroOut=gyroCount;
+						resGyroOut.write((Float.toString(gyroCount)+","+Float.toString(x)+","+Float.toString(y)+","+Float.toString(z)+";").getBytes());
 						Log.e("SleepCalcServiceTag", "Motion detected by gyroZ: "+z);
 					}
 				}				
@@ -277,18 +285,21 @@ public class sensorService extends Service implements SensorEventListener {
 				z=event.values[2];
 				
 				//check sleep cycle
-				if(linearAverageX!=0 && linearCount-lastGyroOut>deltaOutTrigger){
+				if(linearAverageX!=0 && linearCount-lastLinearOut>deltaOutTrigger){
 					if(Math.abs(x-linearAverageX)>LinearSensorTrigger){
 						//Motion detected
-						lastGyroOut=linearCount;
+						lastLinearOut=linearCount;
+						resLinearOut.write((Float.toString(linearCount)+","+Float.toString(x)+","+Float.toString(y)+","+Float.toString(z)+";").getBytes());
 						Log.e("SleepCalcServiceTag", "Motion detected by LinearX: "+x);
 					}else if(Math.abs(y-linearAverageY)>LinearSensorTrigger){
 						//Motion detected
-						lastGyroOut=linearCount;
+						lastLinearOut=linearCount;
+						resLinearOut.write((Float.toString(linearCount)+","+Float.toString(x)+","+Float.toString(y)+","+Float.toString(z)+";").getBytes());
 						Log.e("SleepCalcServiceTag", "Motion detected by LinearY: "+y);
 					}else if(Math.abs(z-linearAverageZ)>LinearSensorTrigger){
 						//Motion detected
-						lastGyroOut=linearCount;
+						lastLinearOut=linearCount;
+						resLinearOut.write((Float.toString(linearCount)+","+Float.toString(x)+","+Float.toString(y)+","+Float.toString(z)+";").getBytes());
 						Log.e("SleepCalcServiceTag", "Motion detected by LinearZ: "+z);
 					}
 				}
