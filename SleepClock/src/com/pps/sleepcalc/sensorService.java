@@ -50,17 +50,31 @@ public class sensorService extends Service implements SensorEventListener {
 	private BufferedOutputStream rotationOut;
 	private BufferedOutputStream timeLogOut;
 	
+	//my IO stream for result
+	private BufferedOutputStream resLinearOut;
+	private BufferedOutputStream resGyroOut;
+	
+	//last Motion data
+	private int lastLinearOut=0;
+	private int lastGyroOut=0;
+	
+	private static int deltaOutTrigger=100;
+	
 	//counter for each sensor
 	private int acceloCount=0;
 	private int linearCount=0;
 	private int gyroCount=0;
 	private int rotationCount=0;
 	
-	private final static int SensorDataBuffMax=1000;
+	//triggers for sensor data
+	private final static float LinearSensorTrigger = 0.3f;
+	private final static float GyroSensorTrigger   = 0.1f;
+	
+	//sensor data buffer for computing average
+	private final static int SensorDataBuffMax=200; //change this value for better average values
 	private int LinearDataCounter = 0;
 	
 	private int GyroDataCounter = 0;
-	//sensor data buffer for computing average
 	private float[] linearDataBuffX = new float[SensorDataBuffMax];
 	private float[] linearDataBuffY = new float[SensorDataBuffMax];
 	private float[] linearDataBuffZ = new float[SensorDataBuffMax];
@@ -111,6 +125,9 @@ public class sensorService extends Service implements SensorEventListener {
 				linearOut = new BufferedOutputStream(new FileOutputStream(new File(getExternalFilesDir(null),"linear.csv")),131072);
 				gyroOut = new BufferedOutputStream(new FileOutputStream(new File(getExternalFilesDir(null),"gyro.csv")),131072);
 				rotationOut = new BufferedOutputStream(new FileOutputStream(new File(getExternalFilesDir(null),"rotation.csv")),131072);
+				
+				resLinearOut = new BufferedOutputStream(new FileOutputStream(new File(getExternalFilesDir(null),"linearRresult.csv")));
+				resGyroOut = new BufferedOutputStream(new FileOutputStream(new File(getExternalFilesDir(null),"gyroRresult.csv")));
 				
 				timeLogOut = new BufferedOutputStream(new FileOutputStream(new File(getExternalFilesDir(null),"timelog.csv")));
 				
@@ -166,7 +183,7 @@ public class sensorService extends Service implements SensorEventListener {
 			break;
 		case Sensor.TYPE_GYROSCOPE:
 			
-			//wirte to specific IO stream
+			//write to specific IO stream
 			try {
 				
 				float x,y,z;
@@ -175,6 +192,23 @@ public class sensorService extends Service implements SensorEventListener {
 				y=event.values[1];
 				z=event.values[2];
 
+				//check sleep cycle
+				if(gyroAverageX!=0 && gyroCount-lastGyroOut>deltaOutTrigger){
+					if(Math.abs(x-gyroAverageX)>GyroSensorTrigger){
+						//Motion detected
+						lastGyroOut=gyroCount;
+						Log.e("SleepCalcServiceTag", "Motion detected by gyroX: "+x);
+					}else if(Math.abs(y-gyroAverageY)>GyroSensorTrigger){
+						//Motion detected
+						lastGyroOut=gyroCount;
+						Log.e("SleepCalcServiceTag", "Motion detected by gyroY: "+y);
+					}else if(Math.abs(z-gyroAverageZ)>GyroSensorTrigger){
+						//Motion detected
+						lastGyroOut=gyroCount;
+						Log.e("SleepCalcServiceTag", "Motion detected by gyroZ: "+z);
+					}
+				}				
+				
 				//add to data buffer
 				gyroDataBuffX[GyroDataCounter]=x;
 				gyroDataBuffY[GyroDataCounter]=y;
@@ -242,6 +276,23 @@ public class sensorService extends Service implements SensorEventListener {
 				y=event.values[1];
 				z=event.values[2];
 				
+				//check sleep cycle
+				if(linearAverageX!=0 && linearCount-lastGyroOut>deltaOutTrigger){
+					if(Math.abs(x-linearAverageX)>LinearSensorTrigger){
+						//Motion detected
+						lastGyroOut=linearCount;
+						Log.e("SleepCalcServiceTag", "Motion detected by LinearX: "+x);
+					}else if(Math.abs(y-linearAverageY)>LinearSensorTrigger){
+						//Motion detected
+						lastGyroOut=linearCount;
+						Log.e("SleepCalcServiceTag", "Motion detected by LinearY: "+y);
+					}else if(Math.abs(z-linearAverageZ)>LinearSensorTrigger){
+						//Motion detected
+						lastGyroOut=linearCount;
+						Log.e("SleepCalcServiceTag", "Motion detected by LinearZ: "+z);
+					}
+				}
+				
 				//add to data buffer
 				linearDataBuffX[LinearDataCounter]=x;
 				linearDataBuffY[LinearDataCounter]=y;
@@ -285,20 +336,11 @@ public class sensorService extends Service implements SensorEventListener {
 		return tmp/size;
 	}
 	
+	
 	@Override
 	public void onDestroy(){
 		
-		//start media scanner to search for the new file so it gets displayed
-		MediaScannerConnection.scanFile(this.getApplicationContext(), new String[]{getExternalFilesDir(null).toString()}, null, 
-			new MediaScannerConnection.OnScanCompletedListener() {
-				@Override
-				public void onScanCompleted(String path, Uri uri) {
-					Log.e("SleepCalcServiceTag", "Media scanner found file in: "+path);
-					// TODO Auto-generated method stub
-					
-				}
-		});
-		
+		wakelock.release();
 		//unregister sensor so no more events gets triggered
 		mSensorManager.unregisterListener(this);
 		
@@ -317,6 +359,12 @@ public class sensorService extends Service implements SensorEventListener {
 			linearOut.flush();
 			linearOut.close();
 			
+			resLinearOut.flush();
+			resLinearOut.close();
+			
+			resGyroOut.flush();
+			resGyroOut.close();
+			
 			timeLogOut.flush();
 			timeLogOut.close();
 		} catch (IOException e) {
@@ -324,7 +372,17 @@ public class sensorService extends Service implements SensorEventListener {
 			e.printStackTrace();
 		}
 		
-		wakelock.release();
+		//start media scanner to search for the new file so it gets displayed
+		MediaScannerConnection.scanFile(this.getApplicationContext(), new String[]{getExternalFilesDir(null).toString()}, null, 
+			new MediaScannerConnection.OnScanCompletedListener() {
+				@Override
+				public void onScanCompleted(String path, Uri uri) {
+					Log.e("SleepCalcServiceTag", "Media scanner found file in: "+path);
+					// TODO Auto-generated method stub
+					
+				}
+		});
+		
 		Log.e("SleepCalcServiceTag", "Service stopped");
 	}
 	
