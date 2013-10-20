@@ -56,6 +56,29 @@ public class sensorService extends Service implements SensorEventListener {
 	private int gyroCount=0;
 	private int rotationCount=0;
 	
+	private final static int SensorDataBuffMax=1000;
+	private int LinearDataCounter = 0;
+	
+	private int GyroDataCounter = 0;
+	//sensor data buffer for computing average
+	private float[] linearDataBuffX = new float[SensorDataBuffMax];
+	private float[] linearDataBuffY = new float[SensorDataBuffMax];
+	private float[] linearDataBuffZ = new float[SensorDataBuffMax];
+	
+	private float[] gyroDataBuffX = new float[SensorDataBuffMax];
+	private float[] gyroDataBuffY = new float[SensorDataBuffMax];
+	private float[] gyroDataBuffZ = new float[SensorDataBuffMax];
+	
+	
+	//average value of sensors
+	private float linearAverageX=0.0f;
+	private float linearAverageY=0.0f;
+	private float linearAverageZ=0.0f;
+	
+	private float gyroAverageX=0.0f;
+	private float gyroAverageY=0.0f;
+	private float gyroAverageZ=0.0f;
+	
 	private final static int timeLogCounterMAX=10000;
 	private int timeLogCounter=timeLogCounterMAX;
 
@@ -151,9 +174,27 @@ public class sensorService extends Service implements SensorEventListener {
 				x=event.values[0];
 				y=event.values[1];
 				z=event.values[2];
+
+				//add to data buffer
+				gyroDataBuffX[GyroDataCounter]=x;
+				gyroDataBuffY[GyroDataCounter]=y;
+				gyroDataBuffZ[GyroDataCounter]=z;
+				
+				GyroDataCounter++;
+				if(GyroDataCounter>=SensorDataBuffMax){
+					GyroDataCounter=0;
+					
+					gyroAverageX=computeAverage(gyroDataBuffX,SensorDataBuffMax);
+					gyroAverageY=computeAverage(gyroDataBuffY,SensorDataBuffMax);
+					gyroAverageZ=computeAverage(gyroDataBuffZ,SensorDataBuffMax);
+					
+					Log.e("SleepCalcServiceTag", "gyro Average x: "+gyroAverageX+" y: "+gyroAverageY+" z: "+gyroAverageZ);
+					
+				}
 				
 				gyroOut.write((Float.toString(x)+","+Float.toString(y)+","+Float.toString(z)+";").getBytes());
 				gyroCount++;
+			
 				
 				//set perTimeCounter down and check if 0 or below
 				timeLogCounter--;
@@ -201,6 +242,23 @@ public class sensorService extends Service implements SensorEventListener {
 				y=event.values[1];
 				z=event.values[2];
 				
+				//add to data buffer
+				linearDataBuffX[LinearDataCounter]=x;
+				linearDataBuffY[LinearDataCounter]=y;
+				linearDataBuffZ[LinearDataCounter]=z;
+				
+				LinearDataCounter++;
+				if(LinearDataCounter>=SensorDataBuffMax){
+					LinearDataCounter=0;
+					
+					linearAverageX=computeAverage(linearDataBuffX,SensorDataBuffMax);
+					linearAverageY=computeAverage(linearDataBuffY,SensorDataBuffMax);
+					linearAverageZ=computeAverage(linearDataBuffZ,SensorDataBuffMax);
+					
+					Log.e("SleepCalcServiceTag", "Linear Average x: "+linearAverageX+" y: "+linearAverageY+" z: "+linearAverageZ);
+					
+				}
+				
 				linearOut.write((Float.toString(x)+","+Float.toString(y)+","+Float.toString(z)+";").getBytes());
 				linearCount++;
 				//Log.e("SleepCalcServiceTag", "Wrote from linear Sensor");
@@ -217,6 +275,14 @@ public class sensorService extends Service implements SensorEventListener {
 		}
 		
 		
+	}
+	
+	private float computeAverage(float[] x, int size){
+		float tmp = 0.0f;
+		for(int i=0;i<size;i++){
+			tmp+=x[i];
+		}
+		return tmp/size;
 	}
 	
 	@Override
