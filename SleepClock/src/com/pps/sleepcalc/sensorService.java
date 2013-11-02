@@ -31,7 +31,7 @@ public class sensorService extends Service implements SensorEventListener {
 
 	//constants
 	private final static int timeLogCounterMAX=10000;
-	private final static int deltaOutTrigger=1000;
+	private final static int deltaOutTrigger=10;
 	private final static int sensorUpdateInterval = 500000;
 	
 	//triggers for sensor data
