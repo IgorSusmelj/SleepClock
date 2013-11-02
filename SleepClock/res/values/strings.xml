@@ -6,5 +6,6 @@
     <string name="hello_world">Hello world!</string>
     <string name="start">Start</string>
     <string name="stop">Stop</string>
+    <string name="calibrate">Calibrate</string>
 
 </resources>
