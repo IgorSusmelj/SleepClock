@@ -9,6 +9,7 @@ import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.text.DateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 import android.media.MediaScannerConnection;
@@ -16,8 +17,11 @@ import android.net.Uri;
 import android.os.Environment;
 import android.os.IBinder;
 import android.os.PowerManager;
+import android.os.PowerManager.WakeLock;
 
+import android.app.AlarmManager;
 import android.app.IntentService;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -31,7 +35,7 @@ public class sensorService extends Service implements SensorEventListener {
 
 	//constants
 	private final static int timeLogCounterMAX=10000;
-	private final static int deltaOutTrigger=10;
+	private final static int deltaOutTrigger=20;
 	private final static int sensorUpdateInterval = 500000;
 	
 	//triggers for sensor data
@@ -53,6 +57,7 @@ public class sensorService extends Service implements SensorEventListener {
 	private SensorManager mSensorManager;
 	
 	//power manager
+	private PowerManager pm;
 	private PowerManager.WakeLock wakelock;
 	
 	
@@ -111,6 +116,8 @@ public class sensorService extends Service implements SensorEventListener {
 	private float gyroAverageY=0.0f;
 	private float gyroAverageZ=0.0f;
 	
+	private AlarmManager alarmmanager;
+	
 
 	private int timeLogCounter=timeLogCounterMAX;
 
@@ -160,9 +167,11 @@ public class sensorService extends Service implements SensorEventListener {
 		}
 		
 		
+		alarmmanager = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
+		
+		pm = (PowerManager) getSystemService(this.POWER_SERVICE);
 		//initiate WakeLock
-		PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
-		wakelock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "wake tag");
+		wakelock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.ON_AFTER_RELEASE, "wake tag");
 		
 		wakelock.acquire();
 		
@@ -217,6 +226,17 @@ public class sensorService extends Service implements SensorEventListener {
 				
 				if((gyroCount-lastGyroOut)>deltaOutTrigger){
 					if(usableData>GyroSensorTrigger){
+						
+						Intent mainApp = new Intent(this, MainActivity.class);
+						mainApp.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+						PendingIntent pintent = PendingIntent.getActivity(this, 0, mainApp, 0);
+						
+				    	//this.startActivity(mainApp);
+						alarmmanager.set(AlarmManager.RTC_WAKEUP,1, pintent);
+						
+						pm.newWakeLock(PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.ON_AFTER_RELEASE, "wake tag").acquire(5000);
+						
+				    	
 						lastGyroOut = gyroCount;
 						resGyroOut.write((DateFormat.getTimeInstance(DateFormat.SHORT).format(new Date()).toString()+","+usableData+",").getBytes());
 						Log.e("SleepCalcServiceTag", "Motion detected by gyro: "+usableData);
