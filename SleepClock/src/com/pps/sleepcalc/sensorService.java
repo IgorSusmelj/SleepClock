@@ -70,8 +70,10 @@ public class sensorService extends Service implements SensorEventListener {
 	private BufferedOutputStream rotationOut;
 	private BufferedOutputStream timeLogOut;
 	
+	private BufferedOutputStream gyroFilteredOut;
+	
 	//my IO stream for result
-	//private BufferedOutputStream resLinearOut;
+	private BufferedOutputStream resLinearOut;
 	private BufferedOutputStream resGyroOut;
 	
 	//last Motion data
@@ -120,15 +122,15 @@ public class sensorService extends Service implements SensorEventListener {
 		mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 		
 		mGyro = mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
-		mAccelo = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-		mLinear = mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
-		mRotation = mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
+		//mAccelo = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+		//mLinear = mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
+		//mRotation = mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
 		
 		//register sensor with specific delay
 		mSensorManager.registerListener(this, mGyro, sensorUpdateInterval);
-		mSensorManager.registerListener(this, mAccelo, sensorUpdateInterval);
-		mSensorManager.registerListener(this, mLinear, sensorUpdateInterval);
-		mSensorManager.registerListener(this, mRotation, sensorUpdateInterval);
+		//mSensorManager.registerListener(this, mAccelo, sensorUpdateInterval);
+		//mSensorManager.registerListener(this, mLinear, sensorUpdateInterval);
+		//mSensorManager.registerListener(this, mRotation, sensorUpdateInterval);
 		
 		//initalise file IO
 		String state = Environment.getExternalStorageState();
@@ -137,10 +139,12 @@ public class sensorService extends Service implements SensorEventListener {
 			Log.e("SleepCalcServiceTag", "output file created in"+getExternalFilesDir(null));
 			
 			try {
-				acceloOut = new BufferedOutputStream(new FileOutputStream(new File(getExternalFilesDir(null),"accelo.csv"),false),131072);
-				linearOut = new BufferedOutputStream(new FileOutputStream(new File(getExternalFilesDir(null),"linear.csv")),131072);
+				//acceloOut = new BufferedOutputStream(new FileOutputStream(new File(getExternalFilesDir(null),"accelo.csv"),false),131072);
+				//linearOut = new BufferedOutputStream(new FileOutputStream(new File(getExternalFilesDir(null),"linear.csv")),131072);
 				gyroOut = new BufferedOutputStream(new FileOutputStream(new File(getExternalFilesDir(null),"gyro.csv")),131072);
-				rotationOut = new BufferedOutputStream(new FileOutputStream(new File(getExternalFilesDir(null),"rotation.csv")),131072);
+				//rotationOut = new BufferedOutputStream(new FileOutputStream(new File(getExternalFilesDir(null),"rotation.csv")),131072);
+				
+				gyroFilteredOut = new BufferedOutputStream(new FileOutputStream(new File(getExternalFilesDir(null),"gyroFiltered.csv")),131072);
 				
 				//resLinearOut = new BufferedOutputStream(new FileOutputStream(new File(getExternalFilesDir(null),"linearRresult.csv")));
 				resGyroOut = new BufferedOutputStream(new FileOutputStream(new File(getExternalFilesDir(null),"gyroRresult.csv")));
@@ -177,7 +181,7 @@ public class sensorService extends Service implements SensorEventListener {
 		//check sensor type
 		switch(event.sensor.getType()){
 		case Sensor.TYPE_ACCELEROMETER:
-			
+			/*
 			//wirte to specific IO stream
 			try {
 				//define temp variables for x,y,z component of value vector
@@ -195,7 +199,7 @@ public class sensorService extends Service implements SensorEventListener {
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			}
+			}*/
 			break;
 		case Sensor.TYPE_GYROSCOPE:
 			
@@ -214,7 +218,8 @@ public class sensorService extends Service implements SensorEventListener {
 				if((gyroCount-lastGyroOut)>deltaOutTrigger){
 					if(usableData>GyroSensorTrigger){
 						lastGyroOut = gyroCount;
-						
+						resGyroOut.write((DateFormat.getTimeInstance(DateFormat.SHORT).format(new Date()).toString()+","+usableData+",").getBytes());
+						Log.e("SleepCalcServiceTag", "Motion detected by gyro: "+usableData);
 					}
 				}
 				
@@ -257,17 +262,19 @@ public class sensorService extends Service implements SensorEventListener {
 				}*/
 				
 				gyroOut.write((Float.toString(x)+","+Float.toString(y)+","+Float.toString(z)+";").getBytes());
+				gyroFilteredOut.write((Float.toString(usableData)+";").getBytes());
+				
 				gyroCount++;
 			
 				
 				//set perTimeCounter down and check if 0 or below
-				timeLogCounter--;
+				/*timeLogCounter--;
 				
 				if(timeLogCounter<=0){
 					//output actual time and sensor counters
 					timeLogOut.write((DateFormat.getTimeInstance(DateFormat.SHORT).format(new Date()).toString()+","+Integer.toString(acceloCount)+","+Integer.toString(gyroCount)+","+Integer.toString(rotationCount)+","+Integer.toString(linearCount)+";").getBytes());
 					timeLogCounter=timeLogCounterMAX;
-				}
+				}*/
 				
 				
 				//Log.e("SleepCalcServiceTag", "Wrote from gyro Sensor");
@@ -278,7 +285,7 @@ public class sensorService extends Service implements SensorEventListener {
 			}
 			break;
 		case Sensor.TYPE_ROTATION_VECTOR:
-			
+			/*
 			//wirte to specific IO stream
 			try {
 				
@@ -295,10 +302,10 @@ public class sensorService extends Service implements SensorEventListener {
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			}
+			}*/
 			break;
 		case Sensor.TYPE_LINEAR_ACCELERATION:
-			
+			/*
 			//wirte to specific IO stream
 			try {
 				
@@ -310,7 +317,7 @@ public class sensorService extends Service implements SensorEventListener {
 				
 				
 				//check sleep cycle
-				/*if(linearAverageX!=0 && linearCount-lastLinearOut>deltaOutTrigger){
+				if(linearAverageX!=0 && linearCount-lastLinearOut>deltaOutTrigger){
 					if(Math.abs(x-linearAverageX)>LinearSensorTrigger){
 						//Motion detected
 						lastLinearOut=linearCount;
@@ -345,7 +352,7 @@ public class sensorService extends Service implements SensorEventListener {
 					Log.e("SleepCalcServiceTag", "Linear Average x: "+linearAverageX+" y: "+linearAverageY+" z: "+linearAverageZ);
 					
 				}
-				*/
+				
 				linearOut.write((Float.toString(x)+","+Float.toString(y)+","+Float.toString(z)+";").getBytes());
 				linearCount++;
 				//Log.e("SleepCalcServiceTag", "Wrote from linear Sensor");
@@ -353,7 +360,7 @@ public class sensorService extends Service implements SensorEventListener {
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			}
+			}*/
 			break;
 		default:
 			Log.e("SleepCalcServiceTag", "None of my sensors!?!?");
@@ -392,17 +399,20 @@ public class sensorService extends Service implements SensorEventListener {
 		
 		//flush and close all IO streams so all data gets written correctly
 		try {
-			acceloOut.flush();
-			acceloOut.close();
+			//acceloOut.flush();
+			//acceloOut.close();
 			
 			gyroOut.flush();
 			gyroOut.close();
 			
-			rotationOut.flush();
-			rotationOut.close();
+			gyroFilteredOut.flush();
+			gyroFilteredOut.close();
 			
-			linearOut.flush();
-			linearOut.close();
+			//rotationOut.flush();
+			//rotationOut.close();
+			
+			//linearOut.flush();
+			//linearOut.close();
 			
 			//resLinearOut.flush();
 			//resLinearOut.close();
@@ -410,8 +420,8 @@ public class sensorService extends Service implements SensorEventListener {
 			resGyroOut.flush();
 			resGyroOut.close();
 			
-			timeLogOut.flush();
-			timeLogOut.close();
+			//timeLogOut.flush();
+			//timeLogOut.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
