@@ -7,6 +7,7 @@ import com.pps.sleepcalc.R;
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -57,7 +58,16 @@ public class MainActivity extends Activity implements TimePicker.OnTimeChangedLi
 
         
         //switch for sensor precision
-        Switch sensorPrecisionSwitch = (Switch) findViewById(R.id.sensorPrecisionSwitch);
+        final Switch sensorPrecisionSwitch = (Switch) findViewById(R.id.sensorPrecisionSwitch);
+        
+        
+        //load default values for each UI element in settings
+		SharedPreferences settings = getSharedPreferences(SHARED_PREF_NAME,0);
+		triggerDelay.setText(settings.getString("triggerDelay", "500"));
+		gyroSensorTrigger.setText(settings.getString("gyroSensorTrigger", "0.06"));
+		kalmanGain.setText(settings.getString("kalmanGain", "0.1"));
+		sensorPrecisionSwitch.setChecked(settings.getBoolean("sensorPrecisionSwitch", false));
+		
         
         //save settings button
         Button saveSettings = (Button) findViewById(R.id.saveSettings);
@@ -65,8 +75,16 @@ public class MainActivity extends Activity implements TimePicker.OnTimeChangedLi
 			
 			@Override
 			public void onClick(View v) {
+				//Log.e("SleepCalcTag", Long.toString(wakeupDeltaBar.getProgress()));
 				
-				
+				//save all settings to SHARED_PREF_NAME
+				SharedPreferences settings = getSharedPreferences(SHARED_PREF_NAME,0);
+				SharedPreferences.Editor editor = settings.edit();
+				editor.putString("triggerDelay", triggerDelay.getText().toString());
+				editor.putString("gyroSensorTrigger", gyroSensorTrigger.getText().toString());
+				editor.putString("kalmanGain", kalmanGain.getText().toString());
+				editor.putBoolean("sensorPrecisionSwitch", sensorPrecisionSwitch.isChecked());
+				editor.commit();
 			}
 		});
         

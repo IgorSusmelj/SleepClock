@@ -94,7 +94,7 @@
                             android:ems="2"
                             android:inputType="numberDecimal"
                             android:maxEms="2"
-                            android:maxLength="2" />
+                            android:maxLength="3" />
 
                     </TableRow>
 
