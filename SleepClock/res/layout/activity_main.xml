@@ -47,7 +47,7 @@
                 android:text="gyro sensor trigger:" />
 
             <EditText
-                android:id="@+id/editText1"
+                android:id="@+id/triggerDelay"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -71,7 +71,7 @@
                 android:text="linear sensor trigger:" />
 
             <EditText
-                android:id="@+id/editText2"
+                android:id="@+id/kalmanGain"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -80,7 +80,7 @@
         </LinearLayout>
 
         <Switch
-            android:id="@+id/switch1"
+            android:id="@+id/sensorPrecisionSwitch"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="enable high precision:"

@@ -25,28 +25,29 @@ public final class R {
     }
     public static final class id {
         public static final int TabHost=0x7f08000a;
-        public static final int action_settings=0x7f080017;
-        public static final int editText1=0x7f080004;
-        public static final int editText2=0x7f080006;
-        public static final int editText3=0x7f080012;
+        public static final int action_settings=0x7f080018;
+        public static final int gyroSensorTrigger=0x7f08000f;
+        public static final int kalmanGain=0x7f080006;
         public static final int linearLayout1=0x7f080002;
+        public static final int saveSettings=0x7f080014;
+        public static final int sensorPrecisionSwitch=0x7f080007;
         public static final int start_button=0x7f080000;
         public static final int stop_button=0x7f080001;
-        public static final int switch1=0x7f080007;
-        public static final int tabMain=0x7f08000b;
-        public static final int tabSettings=0x7f08000e;
-        public static final int tableRow1=0x7f08000f;
-        public static final int tableRow2=0x7f080010;
-        public static final int tableRow3=0x7f080013;
-        public static final int tableRow4=0x7f080015;
+        public static final int tabMain=0x7f080015;
+        public static final int tabSettings=0x7f08000b;
+        public static final int tableRow1=0x7f08000c;
+        public static final int tableRow2=0x7f08000d;
+        public static final int tableRow3=0x7f080010;
+        public static final int tableRow4=0x7f080012;
         public static final int textView2=0x7f080003;
         public static final int textView3=0x7f080008;
-        public static final int textView4=0x7f080011;
-        public static final int textView5=0x7f080014;
-        public static final int textView6=0x7f080016;
-        public static final int timePicker=0x7f08000c;
+        public static final int textView4=0x7f08000e;
+        public static final int textView5=0x7f080011;
+        public static final int textView6=0x7f080013;
+        public static final int timePicker=0x7f080016;
+        public static final int triggerDelay=0x7f080004;
         public static final int wakeupDelta=0x7f080005;
-        public static final int wakupDeltaBar=0x7f08000d;
+        public static final int wakupDeltaBar=0x7f080017;
         public static final int wakupTime=0x7f080009;
     }
     public static final class layout {

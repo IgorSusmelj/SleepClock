@@ -22,6 +22,108 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" >
 
+            <LinearLayout
+                android:id="@+id/tabSettings"
+                android:layout_width="match_parent"
+                android:layout_height="404dp"
+                android:orientation="vertical" >
+
+                <TableLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" >
+
+                    <TableRow
+                        android:id="@+id/tableRow1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" >
+
+                        <TextView
+                            android:id="@+id/textView3"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="trigger delay" />
+
+                        <EditText
+                            android:id="@+id/triggerDelay"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:ems="4"
+                            android:inputType="numberSigned"
+                            android:maxEms="4"
+                            android:maxLength="4" />
+
+                    </TableRow>
+
+                    <TableRow
+                        android:id="@+id/tableRow2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" >
+
+                        <TextView
+                            android:id="@+id/textView4"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="gyro-sensor trigger" />
+
+                        <EditText
+                            android:id="@+id/gyroSensorTrigger"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:ems="4"
+                            android:inputType="numberDecimal"
+                            android:maxEms="4"
+                            android:maxLength="4" />
+
+                    </TableRow>
+
+                    <TableRow
+                        android:id="@+id/tableRow3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" >
+
+                        <TextView
+                            android:id="@+id/textView5"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Kalman gain" />
+
+                        <EditText
+                            android:id="@+id/kalmanGain"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:ems="2"
+                            android:inputType="numberDecimal"
+                            android:maxEms="2"
+                            android:maxLength="2" />
+
+                    </TableRow>
+
+                    <TableRow
+                        android:id="@+id/tableRow4"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" >
+
+                        <TextView
+                            android:id="@+id/textView6"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="sensor high precision" />
+
+                        <Switch
+                            android:id="@+id/sensorPrecisionSwitch"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+                    </TableRow>
+                </TableLayout>
+
+                <Button
+                    android:id="@+id/saveSettings"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Save Settings" />
+
+            </LinearLayout>
+
             <RelativeLayout
                 android:id="@+id/tabMain"
                 android:layout_width="match_parent"
@@ -86,103 +188,6 @@
                     android:layout_alignLeft="@+id/timePicker"
                     android:text="Wakeup delta:" />
             </RelativeLayout>
-
-            <LinearLayout
-                android:id="@+id/tabSettings"
-                android:layout_width="match_parent"
-                android:layout_height="404dp"
-                android:orientation="vertical" >
-
-                <TableLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" >
-
-                    <TableRow
-                        android:id="@+id/tableRow1"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" >
-
-                        <TextView
-                            android:id="@+id/textView3"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="trigger delay" />
-
-                        <EditText
-                            android:id="@+id/editText1"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:ems="4"
-                            android:inputType="numberSigned"
-                            android:maxEms="4" />
-
-                    </TableRow>
-
-                    <TableRow
-                        android:id="@+id/tableRow2"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" >
-
-                        <TextView
-                            android:id="@+id/textView4"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="gyro-sensor trigger" />
-
-                        <EditText
-                            android:id="@+id/editText3"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:ems="4"
-                            android:inputType="numberDecimal"
-                            android:maxEms="4" >
-
-                            <requestFocus />
-                        </EditText>
-
-                    </TableRow>
-
-                    <TableRow
-                        android:id="@+id/tableRow3"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" >
-
-                        <TextView
-                            android:id="@+id/textView5"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Kalman gain" />
-
-                        <EditText
-                            android:id="@+id/editText2"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:ems="2"
-                            android:inputType="numberDecimal"
-                            android:maxEms="2" />
-
-                    </TableRow>
-
-                    <TableRow
-                        android:id="@+id/tableRow4"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" >
-
-                        <TextView
-                            android:id="@+id/textView6"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="sensor high precision" />
-
-                        <Switch
-                            android:id="@+id/switch1"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" />
-
-                    </TableRow>
-                </TableLayout>
-
-            </LinearLayout>
 
         </FrameLayout>
 
