@@ -14,6 +14,7 @@ import java.util.Date;
 
 import android.media.MediaScannerConnection;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.Environment;
 import android.os.IBinder;
 import android.os.PowerManager;
@@ -81,6 +82,8 @@ public class sensorService extends Service implements SensorEventListener {
 	private BufferedOutputStream resLinearOut;
 	private BufferedOutputStream resGyroOut;
 	
+	private BufferedOutputStream wakeuptime;
+	
 	//last Motion data
 	private int lastLinearOut=0;
 	private int lastGyroOut=0;
@@ -118,11 +121,20 @@ public class sensorService extends Service implements SensorEventListener {
 	
 	private AlarmManager alarmmanager;
 	
+	private boolean wakeMeUp=false;
+	private int wakeupHours;
+	private int wakeupMinutes;
+	
 
 	private int timeLogCounter=timeLogCounterMAX;
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
+		Bundle extras = intent.getExtras();
+		
+		wakeupHours = extras.getInt("wakeupHours");
+		wakeupMinutes = extras.getInt("wakeupMinutes");
+		
 		Log.e("SleepCalcServiceTag", "Service started");
 		
 		//set up sensors 
@@ -155,6 +167,8 @@ public class sensorService extends Service implements SensorEventListener {
 				
 				//resLinearOut = new BufferedOutputStream(new FileOutputStream(new File(getExternalFilesDir(null),"linearRresult.csv")));
 				resGyroOut = new BufferedOutputStream(new FileOutputStream(new File(getExternalFilesDir(null),"gyroRresult.csv")));
+				
+				wakeuptime = new BufferedOutputStream(new FileOutputStream(new File(getExternalFilesDir(null),"wakeup.csv")));
 				
 				timeLogOut = new BufferedOutputStream(new FileOutputStream(new File(getExternalFilesDir(null),"timelog.csv")));
 				
@@ -226,7 +240,7 @@ public class sensorService extends Service implements SensorEventListener {
 				
 				if((gyroCount-lastGyroOut)>deltaOutTrigger){
 					if(usableData>GyroSensorTrigger){
-						
+						/*
 						Intent mainApp = new Intent(this, MainActivity.class);
 						mainApp.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 						PendingIntent pintent = PendingIntent.getActivity(this, 0, mainApp, 0);
@@ -235,10 +249,17 @@ public class sensorService extends Service implements SensorEventListener {
 						alarmmanager.set(AlarmManager.RTC_WAKEUP,1, pintent);
 						
 						pm.newWakeLock(PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.ON_AFTER_RELEASE, "wake tag").acquire(5000);
+						*/
+						if(wakeMeUp){
+							wakeuptime.write((DateFormat.getTimeInstance(DateFormat.SHORT).format(new Date())+",").getBytes());
+						}
+						Calendar calendar = Calendar.getInstance();
 						
-				    	
+						if(wakeupHours<calendar.get(Calendar.HOUR_OF_DAY)&&wakeupMinutes<calendar.get(Calendar.MINUTE)){
+							wakeMeUp=true;
+						}
 						lastGyroOut = gyroCount;
-						resGyroOut.write((DateFormat.getTimeInstance(DateFormat.SHORT).format(new Date()).toString()+","+usableData+",").getBytes());
+						resGyroOut.write((DateFormat.getTimeInstance(DateFormat.SHORT).format(new Date())+","+usableData+",").getBytes());
 						Log.e("SleepCalcServiceTag", "Motion detected by gyro: "+usableData);
 					}
 				}
@@ -436,6 +457,9 @@ public class sensorService extends Service implements SensorEventListener {
 			
 			//resLinearOut.flush();
 			//resLinearOut.close();
+			
+			wakeuptime.flush();
+			wakeuptime.close();
 			
 			resGyroOut.flush();
 			resGyroOut.close();
