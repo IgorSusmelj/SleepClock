@@ -36,12 +36,12 @@ public class sensorService extends Service implements SensorEventListener {
 
 	//constants
 	private final static int timeLogCounterMAX=10000;
-	private final static int deltaOutTrigger=20;
+	private final static int deltaOutTrigger=500;
 	private final static int sensorUpdateInterval = 500000;
 	
 	//triggers for sensor data
 	private final static float LinearSensorTrigger = 0.8f;//change this value for lower or higher threshold 
-	private final static float GyroSensorTrigger   = 0.5f;
+	private final static float GyroSensorTrigger   = 0.06f;
 	
 	//the gain of the kalman filter
 	private static float kalmanGain = 0.1f;
