@@ -31,6 +31,13 @@ public class MainActivity extends Activity implements TimePicker.OnTimeChangedLi
 	private int wakeupMinutes;
 	
 	private static final String SHARED_PREF_NAME = "SleepClock Prefs";
+
+	private EditText triggerDelay;
+	private EditText gyroSensorTrigger;
+	private EditText kalmanGain;
+	private SeekBar wakeupDeltaBar;
+	private TextView wakeupDelta;
+	private Switch sensorPrecisionSwitch;
 	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,18 +54,15 @@ public class MainActivity extends Activity implements TimePicker.OnTimeChangedLi
         final TimePicker timepick = (TimePicker) findViewById(R.id.timePicker);
         timepick.setOnTimeChangedListener(this);
         
-        //gui elements for delta wakeup time
-        final TextView wakeupDelta = (TextView) findViewById(R.id.wakeupDelta);
-        final SeekBar wakeupDeltaBar = (SeekBar) findViewById(R.id.wakupDeltaBar);
+        wakeupDelta = (TextView) findViewById(R.id.wakeupDelta);
+        wakeupDeltaBar = (SeekBar) findViewById(R.id.wakupDeltaBar);
         
-        //gui elements for settings
-        final EditText triggerDelay = (EditText) findViewById(R.id.triggerDelay);
-        final EditText gyroSensorTrigger = (EditText) findViewById(R.id.gyroSensorTrigger);
-        final EditText kalmanGain = (EditText) findViewById(R.id.kalmanGain);
+        triggerDelay = (EditText) findViewById(R.id.triggerDelay);
+        gyroSensorTrigger = (EditText) findViewById(R.id.gyroSensorTrigger);
+        kalmanGain = (EditText) findViewById(R.id.kalmanGain);
 
         
-        //switch for sensor precision
-        final Switch sensorPrecisionSwitch = (Switch) findViewById(R.id.sensorPrecisionSwitch);
+        sensorPrecisionSwitch = (Switch) findViewById(R.id.sensorPrecisionSwitch);
         
         
         //load default values for each UI element in settings
@@ -118,6 +122,14 @@ public class MainActivity extends Activity implements TimePicker.OnTimeChangedLi
     	sensorService = new Intent(this, sensorService.class);
     	sensorService.putExtra("wakeupHours", wakeupHours);
     	sensorService.putExtra("wakeupMinutes", wakeupMinutes);
+    	
+    	//extras from settings
+    	sensorService.putExtra("triggerDelay", triggerDelay.getText());
+    	sensorService.putExtra("gyroSensorTrigger", gyroSensorTrigger.getText());
+    	sensorService.putExtra("kalmanGain", kalmanGain.getText());
+    	sensorService.putExtra("sensorPrecisionSwitch", sensorPrecisionSwitch.isChecked());
+
+    	
     	startService(sensorService);
     	
     	//Toast and log output for user/developper notification
