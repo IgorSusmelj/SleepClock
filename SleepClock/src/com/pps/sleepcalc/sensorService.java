@@ -36,12 +36,17 @@ public class sensorService extends Service implements SensorEventListener {
 
 	//constants
 	private final static int timeLogCounterMAX=10000;
-	private final static int deltaOutTrigger=1000;
-	private final static int sensorUpdateInterval = 500000;
+	private static int triggerDelay=1000;
+	
+	private final static int SENSOR_PRECISION_LOW = 500000;
+	private final static int SENSOR_PRECISION_HIGH= 5000000;
+	
+	private int sensorUpdateInterval = SENSOR_PRECISION_LOW;
+	
 	
 	//triggers for sensor data
 	private final static float LinearSensorTrigger = 0.8f;//change this value for lower or higher threshold 
-	private final static float GyroSensorTrigger   = 0.1f;
+	private static float gyroSensorTrigger   = 0.1f;
 	
 	//the gain of the kalman filter
 	private static float kalmanGain = 0.1f;
@@ -132,6 +137,8 @@ public class sensorService extends Service implements SensorEventListener {
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
+		
+		//get extras from MainActivity
 		Bundle extras = intent.getExtras();
 		
 		wakeupHours = extras.getInt("wakeupHours");
@@ -142,6 +149,15 @@ public class sensorService extends Service implements SensorEventListener {
 		}else{
 			wakeup_date = Calendar.getInstance().get(Calendar.DAY_OF_YEAR);
 		}
+		
+		triggerDelay = extras.getInt("triggerDelay");
+		gyroSensorTrigger = extras.getFloat("gyroSensorTrigger");
+		kalmanGain = extras.getFloat("kalmanGain");
+		
+		if(extras.getBoolean("sensorPrecisionSwitch"))
+			sensorUpdateInterval = SENSOR_PRECISION_HIGH;
+		
+		
 		
 		
 		Log.e("SleepCalcServiceTag", "Service started");
@@ -247,8 +263,8 @@ public class sensorService extends Service implements SensorEventListener {
 				float usableData = kalman(makeUsable(x,y,z),lastKalmanGyro,kalmanGain);
 				lastKalmanGyro=usableData;
 				
-				if((gyroCount-lastGyroOut)>deltaOutTrigger){
-					if(usableData>GyroSensorTrigger){
+				if((gyroCount-lastGyroOut)>triggerDelay){
+					if(usableData>gyroSensorTrigger){
 						/*
 						Intent mainApp = new Intent(this, MainActivity.class);
 						mainApp.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -276,18 +292,18 @@ public class sensorService extends Service implements SensorEventListener {
 				
 
 				//check sleep cycle
-				/*if(gyroAverageX!=0 && gyroCount-lastGyroOut>deltaOutTrigger){
-					if(Math.abs(x-gyroAverageX)>GyroSensorTrigger){
+				/*if(gyroAverageX!=0 && gyroCount-lastGyroOut>triggerDelay){
+					if(Math.abs(x-gyroAverageX)>gyroSensorTrigger){
 						//Motion detected
 						lastGyroOut=gyroCount;
 						resGyroOut.write((Integer.toString(gyroCount)+","+Float.toString(x)+","+Float.toString(y)+","+Float.toString(z)+";").getBytes());
 						Log.e("SleepCalcServiceTag", "Motion detected by gyroX: "+x);
-					}else if(Math.abs(y-gyroAverageY)>GyroSensorTrigger){
+					}else if(Math.abs(y-gyroAverageY)>gyroSensorTrigger){
 						//Motion detected
 						lastGyroOut=gyroCount;
 						resGyroOut.write((Integer.toString(gyroCount)+","+Float.toString(x)+","+Float.toString(y)+","+Float.toString(z)+";").getBytes());
 						Log.e("SleepCalcServiceTag", "Motion detected by gyroY: "+y);
-					}else if(Math.abs(z-gyroAverageZ)>GyroSensorTrigger){
+					}else if(Math.abs(z-gyroAverageZ)>gyroSensorTrigger){
 						//Motion detected
 						lastGyroOut=gyroCount;
 						resGyroOut.write((Integer.toString(gyroCount)+","+Float.toString(x)+","+Float.toString(y)+","+Float.toString(z)+";").getBytes());
@@ -368,7 +384,7 @@ public class sensorService extends Service implements SensorEventListener {
 				
 				
 				//check sleep cycle
-				if(linearAverageX!=0 && linearCount-lastLinearOut>deltaOutTrigger){
+				if(linearAverageX!=0 && linearCount-lastLinearOut>triggerDelay){
 					if(Math.abs(x-linearAverageX)>LinearSensorTrigger){
 						//Motion detected
 						lastLinearOut=linearCount;
