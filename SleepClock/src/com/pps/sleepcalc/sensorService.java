@@ -36,12 +36,12 @@ public class sensorService extends Service implements SensorEventListener {
 
 	//constants
 	private final static int timeLogCounterMAX=10000;
-	private final static int deltaOutTrigger=500;
+	private final static int deltaOutTrigger=1000;
 	private final static int sensorUpdateInterval = 500000;
 	
 	//triggers for sensor data
 	private final static float LinearSensorTrigger = 0.8f;//change this value for lower or higher threshold 
-	private final static float GyroSensorTrigger   = 0.06f;
+	private final static float GyroSensorTrigger   = 0.1f;
 	
 	//the gain of the kalman filter
 	private static float kalmanGain = 0.1f;
@@ -125,6 +125,8 @@ public class sensorService extends Service implements SensorEventListener {
 	private int wakeupHours;
 	private int wakeupMinutes;
 	
+	private int wakeup_date=0;
+	
 
 	private int timeLogCounter=timeLogCounterMAX;
 
@@ -134,6 +136,13 @@ public class sensorService extends Service implements SensorEventListener {
 		
 		wakeupHours = extras.getInt("wakeupHours");
 		wakeupMinutes = extras.getInt("wakeupMinutes");
+		
+		if(Calendar.getInstance().get(Calendar.HOUR_OF_DAY)>16){
+			wakeup_date = Calendar.getInstance().get(Calendar.DAY_OF_YEAR)+1;
+		}else{
+			wakeup_date = Calendar.getInstance().get(Calendar.DAY_OF_YEAR);
+		}
+		
 		
 		Log.e("SleepCalcServiceTag", "Service started");
 		
@@ -254,12 +263,13 @@ public class sensorService extends Service implements SensorEventListener {
 							wakeuptime.write((DateFormat.getTimeInstance(DateFormat.SHORT).format(new Date())+",").getBytes());
 						}
 						Calendar calendar = Calendar.getInstance();
-						
-						if(wakeupHours<calendar.get(Calendar.HOUR_OF_DAY)&&wakeupMinutes<calendar.get(Calendar.MINUTE)){
-							wakeMeUp=true;
+						if(wakeup_date==calendar.get(Calendar.DAY_OF_YEAR)){
+							if(wakeupHours<calendar.get(Calendar.HOUR_OF_DAY)&&wakeupMinutes<calendar.get(Calendar.MINUTE)){
+								wakeMeUp=true;
+							}
 						}
 						lastGyroOut = gyroCount;
-						resGyroOut.write((DateFormat.getTimeInstance(DateFormat.SHORT).format(new Date())+","+usableData+",").getBytes());
+						resGyroOut.write((DateFormat.getTimeInstance(DateFormat.SHORT).format(new Date())+","+usableData+";").getBytes());
 						Log.e("SleepCalcServiceTag", "Motion detected by gyro: "+usableData);
 					}
 				}
