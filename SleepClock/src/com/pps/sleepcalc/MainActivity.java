@@ -67,8 +67,8 @@ public class MainActivity extends Activity implements TimePicker.OnTimeChangedLi
         
         //load default values for each UI element in settings
 		SharedPreferences settings = getSharedPreferences(SHARED_PREF_NAME,0);
-		triggerDelay.setText(settings.getString("triggerDelay", "500"));
-		gyroSensorTrigger.setText(settings.getString("gyroSensorTrigger", "0.06"));
+		triggerDelay.setText(settings.getString("triggerDelay", "1000"));
+		gyroSensorTrigger.setText(settings.getString("gyroSensorTrigger", "0.1"));
 		kalmanGain.setText(settings.getString("kalmanGain", "0.1"));
 		sensorPrecisionSwitch.setChecked(settings.getBoolean("sensorPrecisionSwitch", false));
 		
@@ -124,10 +124,10 @@ public class MainActivity extends Activity implements TimePicker.OnTimeChangedLi
     	sensorService.putExtra("wakeupMinutes", wakeupMinutes);
     	
     	//extras from settings
-    	sensorService.putExtra("triggerDelay", triggerDelay.getText());
-    	sensorService.putExtra("gyroSensorTrigger", gyroSensorTrigger.getText());
-    	sensorService.putExtra("kalmanGain", kalmanGain.getText());
-    	sensorService.putExtra("sensorPrecisionSwitch", sensorPrecisionSwitch.isChecked());
+    	sensorService.putExtra("triggerDelay", Integer.valueOf(triggerDelay.getText().toString()));
+    	sensorService.putExtra("gyroSensorTrigger", Float.valueOf(gyroSensorTrigger.getText().toString()));
+    	sensorService.putExtra("kalmanGain", Float.valueOf(kalmanGain.getText().toString()));
+    	sensorService.putExtra("sensorPrecisionSwitch", Boolean.valueOf(sensorPrecisionSwitch.isChecked()));
 
     	
     	startService(sensorService);
