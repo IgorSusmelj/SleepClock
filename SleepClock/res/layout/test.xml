@@ -41,6 +41,7 @@
                             android:id="@+id/textView3"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
+                            android:layout_marginLeft="5dp"
                             android:layout_weight="1"
                             android:text="trigger delay" />
 
@@ -64,6 +65,7 @@
                             android:id="@+id/textView4"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
+                            android:layout_marginLeft="5dp"
                             android:layout_weight="1"
                             android:text="gyro-sensor trigger" />
 
@@ -87,6 +89,7 @@
                             android:id="@+id/textView5"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
+                            android:layout_marginLeft="5dp"
                             android:layout_weight="1"
                             android:text="Kalman gain" />
 
@@ -110,6 +113,7 @@
                             android:id="@+id/textView6"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
+                            android:layout_marginLeft="5dp"
                             android:layout_weight="1"
                             android:text="sensor high precision" />
 
@@ -119,7 +123,6 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1" />
                     </TableRow>
-
                 </TableLayout>
 
                 <LinearLayout
