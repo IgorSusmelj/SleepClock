@@ -150,6 +150,8 @@ public class MainActivity extends Activity implements TimePicker.OnTimeChangedLi
 	@Override
 	public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
 		Log.e("SleepCalcTag", "Hour: "+hourOfDay+" minute: "+minute);
+		wakeupHours=hourOfDay;
+		wakeupMinutes=minute;
 		// TODO Auto-generated method stub
 		
 	}

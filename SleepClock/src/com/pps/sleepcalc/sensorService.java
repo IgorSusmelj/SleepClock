@@ -137,18 +137,22 @@ public class sensorService extends Service implements SensorEventListener {
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		
+		Log.e("SleepCalcServiceTag", "Service started");
 		//get extras from MainActivity
 		Bundle extras = intent.getExtras();
 		
 		wakeupHours = extras.getInt("wakeupHours");
 		wakeupMinutes = extras.getInt("wakeupMinutes");
 		
-		if(Calendar.getInstance().get(Calendar.HOUR_OF_DAY)>16){
+		if(Calendar.getInstance().get(Calendar.HOUR_OF_DAY)>14){
 			wakeup_date = Calendar.getInstance().get(Calendar.DAY_OF_YEAR)+1;
+			Log.e("SleepCalcServiceTag", "Wake you up tomorrow!");
 		}else{
 			wakeup_date = Calendar.getInstance().get(Calendar.DAY_OF_YEAR);
+			Log.e("SleepCalcServiceTag", "Wake you up today!");
 		}
+		
+		//Log.e("SleepCalcServiceTag", "wakeupHours: "+wakeupHours+"wakeupMin: "+wakeupMinutes+"wakup_date: "+wakeup_date);
 		
 		triggerDelay = extras.getInt("triggerDelay");
 		gyroSensorTrigger = extras.getFloat("gyroSensorTrigger");
@@ -159,8 +163,7 @@ public class sensorService extends Service implements SensorEventListener {
 		
 		
 		
-		
-		Log.e("SleepCalcServiceTag", "Service started");
+	
 		
 		//set up sensors 
 		mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
