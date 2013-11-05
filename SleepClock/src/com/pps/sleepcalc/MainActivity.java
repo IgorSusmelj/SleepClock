@@ -147,6 +147,20 @@ public class MainActivity extends Activity implements TimePicker.OnTimeChangedLi
     }
     
     public void resetClicked(View view){
+    	//reset fields
+    	triggerDelay.setText("1000");
+    	gyroSensorTrigger.setText("0.1");
+    	kalmanGain.setText("0.1");
+    	sensorPrecisionSwitch.setChecked(false);
+    	
+    	//update config
+		SharedPreferences settings = getSharedPreferences(SHARED_PREF_NAME,0);
+		SharedPreferences.Editor editor = settings.edit();
+		editor.putString("triggerDelay", triggerDelay.getText().toString());
+		editor.putString("gyroSensorTrigger", gyroSensorTrigger.getText().toString());
+		editor.putString("kalmanGain", kalmanGain.getText().toString());
+		editor.putBoolean("sensorPrecisionSwitch", sensorPrecisionSwitch.isChecked());
+		editor.commit();  	
     	Log.e("SleepCalcTag", "reset clicked");
     }
 
