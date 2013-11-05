@@ -145,6 +145,10 @@ public class MainActivity extends Activity implements TimePicker.OnTimeChangedLi
     	Toast.makeText(this, "Service stopped", Toast.LENGTH_SHORT).show();
     	Log.e("SleepCalcTag", "stop clicked");
     }
+    
+    public void resetClicked(View view){
+    	Log.e("SleepCalcTag", "reset clicked");
+    }
 
 
 	@Override
