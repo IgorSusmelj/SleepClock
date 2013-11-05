@@ -124,7 +124,10 @@ public class sensorService extends Service implements SensorEventListener {
 	private float gyroAverageY=0.0f;
 	private float gyroAverageZ=0.0f;
 	
+	
 	private AlarmManager alarmmanager;
+	
+	private Calendar wakeupCalendar;
 	
 	private boolean wakeMeUp=false;
 	private int wakeupHours;
@@ -138,18 +141,25 @@ public class sensorService extends Service implements SensorEventListener {
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		Log.e("SleepCalcServiceTag", "Service started");
+		
 		//get extras from MainActivity
 		Bundle extras = intent.getExtras();
 		
 		wakeupHours = extras.getInt("wakeupHours");
 		wakeupMinutes = extras.getInt("wakeupMinutes");
 		
-		if(Calendar.getInstance().get(Calendar.HOUR_OF_DAY)>14){
-			wakeup_date = Calendar.getInstance().get(Calendar.DAY_OF_YEAR)+1;
-			Log.e("SleepCalcServiceTag", "Wake you up tomorrow!");
-		}else{
-			wakeup_date = Calendar.getInstance().get(Calendar.DAY_OF_YEAR);
+		wakeupCalendar= Calendar.getInstance();
+		
+		
+		wakeupCalendar.set(Calendar.HOUR_OF_DAY, wakeupHours);
+		wakeupCalendar.set(Calendar.MINUTE, wakeupMinutes);
+
+		
+		if(wakeupCalendar.after(Calendar.getInstance())){
 			Log.e("SleepCalcServiceTag", "Wake you up today!");
+		}else{
+			wakeupCalendar.set(Calendar.DAY_OF_YEAR, Calendar.DAY_OF_YEAR+1);
+			Log.e("SleepCalcServiceTag", "Wake you up tomorrow!");
 		}
 		
 		//Log.e("SleepCalcServiceTag", "wakeupHours: "+wakeupHours+"wakeupMin: "+wakeupMinutes+"wakup_date: "+wakeup_date);
@@ -278,15 +288,12 @@ public class sensorService extends Service implements SensorEventListener {
 						
 						pm.newWakeLock(PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.ON_AFTER_RELEASE, "wake tag").acquire(5000);
 						*/
-						if(wakeMeUp){
+						
+						Calendar calendar = Calendar.getInstance();
+						if(wakeupCalendar.after(calendar)){
 							wakeuptime.write((DateFormat.getTimeInstance(DateFormat.SHORT).format(new Date())+",").getBytes());
 						}
-						Calendar calendar = Calendar.getInstance();
-						if(wakeup_date==calendar.get(Calendar.DAY_OF_YEAR)){
-							if(wakeupHours<calendar.get(Calendar.HOUR_OF_DAY)&&wakeupMinutes<calendar.get(Calendar.MINUTE)){
-								wakeMeUp=true;
-							}
-						}
+
 						lastGyroOut = gyroCount;
 						resGyroOut.write((DateFormat.getTimeInstance(DateFormat.SHORT).format(new Date())+","+usableData+";").getBytes());
 						Log.e("SleepCalcServiceTag", "Motion detected by gyro: "+usableData);
