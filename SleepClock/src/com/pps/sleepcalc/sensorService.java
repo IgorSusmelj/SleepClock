@@ -39,7 +39,7 @@ public class sensorService extends Service implements SensorEventListener {
 	private static int triggerDelay=1000;
 	
 	private final static int SENSOR_PRECISION_LOW = 500000;
-	private final static int SENSOR_PRECISION_HIGH= 5000000;
+	private final static int SENSOR_PRECISION_HIGH= 50000;
 	
 	private int sensorUpdateInterval = SENSOR_PRECISION_LOW;
 	
