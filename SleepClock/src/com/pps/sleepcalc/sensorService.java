@@ -290,7 +290,7 @@ public class sensorService extends Service implements SensorEventListener {
 						*/
 						
 						Calendar calendar = Calendar.getInstance();
-						if(wakeupCalendar.after(calendar)){
+						if(wakeupCalendar.before(calendar)){
 							wakeuptime.write((DateFormat.getTimeInstance(DateFormat.SHORT).format(new Date())+",").getBytes());
 						}
 
