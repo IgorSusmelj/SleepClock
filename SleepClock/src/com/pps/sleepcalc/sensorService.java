@@ -48,8 +48,13 @@ public class sensorService extends Service implements SensorEventListener {
 	private final static float LinearSensorTrigger = 0.8f;//change this value for lower or higher threshold 
 	private static float gyroSensorTrigger   = 0.1f;
 	
-	//the gain of the kalman filter
-	private static float kalmanGain = 0.1f;
+	//variables for the kalman filter
+	private static float kalmanQnoise = 4.0f;
+	private static float kalmanRnoise = 4.0f;
+	private static float kalmanGain = 1.0f;
+	private static float kalmanPerror = 20.0f;
+	private static float kalmanX = 0.0f;
+	
 	
 	//the gain of the different gyro axes
 	private static float gyroXgain = 0.1f;
@@ -93,7 +98,7 @@ public class sensorService extends Service implements SensorEventListener {
 	private int lastLinearOut=0;
 	private int lastGyroOut=0;
 	
-	private float lastKalmanGyro = 0.0f;
+
 	
 	//counter for each sensor
 	private int acceloCount=0;
@@ -283,8 +288,8 @@ public class sensorService extends Service implements SensorEventListener {
 				y=event.values[1];
 				z=event.values[2];
 				
-				float usableData = kalman(makeUsable(x,y,z),lastKalmanGyro,kalmanGain);
-				lastKalmanGyro=usableData;
+				float usableData = kalman(makeUsable(x,y,z));
+
 				
 				if((gyroCount-lastGyroOut)>triggerDelay){
 					if(usableData>gyroSensorTrigger){
@@ -459,9 +464,13 @@ public class sensorService extends Service implements SensorEventListener {
 		
 	}
 	
-	
-	public float kalman(float x,float lastX,float gain){
-		return x*gain+(1-gain)*lastX;
+
+	public float kalman(float x){
+		kalmanPerror += kalmanQnoise;
+		kalmanGain = kalmanPerror/(kalmanPerror+kalmanRnoise);
+		kalmanPerror = (1-kalmanGain) * kalmanPerror;
+		return kalmanX + kalmanGain * (x-kalmanX);
+		//return x*gain+(1-gain)*lastX;
 	}
 	
 	public float makeUsable(float x, float y, float z){
