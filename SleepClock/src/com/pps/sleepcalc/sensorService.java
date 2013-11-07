@@ -135,6 +135,8 @@ public class sensorService extends Service implements SensorEventListener {
 	
 	private int wakeup_date=0;
 	
+	private long lastSensorTime;
+	
 
 	private int timeLogCounter=timeLogCounterMAX;
 
@@ -144,6 +146,8 @@ public class sensorService extends Service implements SensorEventListener {
 		
 		//get extras from MainActivity
 		Bundle extras = intent.getExtras();
+		
+		
 		
 		wakeupHours = extras.getInt("wakeupHours");
 		wakeupMinutes = extras.getInt("wakeupMinutes");
@@ -158,9 +162,9 @@ public class sensorService extends Service implements SensorEventListener {
 		if(wakeupCalendar.after(Calendar.getInstance())){
 			Log.e("SleepCalcServiceTag", "Wake you up today!");
 		}else{
-			Log.e("SleepCalcServiceTag", "wakup: "+Calendar.getInstance().after(wakeupCalendar));
+			//Log.e("SleepCalcServiceTag", "wakup: "+Calendar.getInstance().after(wakeupCalendar));
 			wakeupCalendar.add(Calendar.DAY_OF_YEAR, 1);
-			Log.e("SleepCalcServiceTag", "wakup: "+Calendar.getInstance().after(wakeupCalendar));
+			//Log.e("SleepCalcServiceTag", "wakup: "+Calendar.getInstance().after(wakeupCalendar));
 			Log.e("SleepCalcServiceTag", "Wake you up tomorrow!");
 		}
 		
