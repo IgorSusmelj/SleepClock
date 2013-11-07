@@ -158,7 +158,9 @@ public class sensorService extends Service implements SensorEventListener {
 		if(wakeupCalendar.after(Calendar.getInstance())){
 			Log.e("SleepCalcServiceTag", "Wake you up today!");
 		}else{
-			wakeupCalendar.set(Calendar.DAY_OF_YEAR, Calendar.DAY_OF_YEAR+1);
+			Log.e("SleepCalcServiceTag", "wakup: "+Calendar.getInstance().after(wakeupCalendar));
+			wakeupCalendar.add(Calendar.DAY_OF_YEAR, 1);
+			Log.e("SleepCalcServiceTag", "wakup: "+Calendar.getInstance().after(wakeupCalendar));
 			Log.e("SleepCalcServiceTag", "Wake you up tomorrow!");
 		}
 		
@@ -168,8 +170,12 @@ public class sensorService extends Service implements SensorEventListener {
 		gyroSensorTrigger = extras.getFloat("gyroSensorTrigger");
 		kalmanGain = extras.getFloat("kalmanGain");
 		
-		if(extras.getBoolean("sensorPrecisionSwitch"))
+		if(extras.getBoolean("sensorPrecisionSwitch")){
 			sensorUpdateInterval = SENSOR_PRECISION_HIGH;
+			Log.e("SleepCalcServiceTag", "Sensor precision: hight");
+		}else{
+			Log.e("SleepCalcServiceTag", "Sensor precision: low");
+		}
 		
 		
 		
@@ -298,6 +304,7 @@ public class sensorService extends Service implements SensorEventListener {
 						resGyroOut.write((DateFormat.getTimeInstance(DateFormat.SHORT).format(new Date())+","+usableData+";").getBytes());
 						Log.e("SleepCalcServiceTag", "Motion detected by gyro: "+usableData);
 					}
+					timeLogOut.write((DateFormat.getTimeInstance(DateFormat.SHORT).format(new Date())+","+gyroCount+";").getBytes());
 				}
 				
 
@@ -500,8 +507,8 @@ public class sensorService extends Service implements SensorEventListener {
 			resGyroOut.flush();
 			resGyroOut.close();
 			
-			//timeLogOut.flush();
-			//timeLogOut.close();
+			timeLogOut.flush();
+			timeLogOut.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
