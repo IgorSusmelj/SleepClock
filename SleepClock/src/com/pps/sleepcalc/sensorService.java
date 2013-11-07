@@ -49,8 +49,8 @@ public class sensorService extends Service implements SensorEventListener {
 	private static float gyroSensorTrigger   = 0.1f;
 	
 	//variables for the kalman filter
-	private static float kalmanQnoise = 4.0f;
-	private static float kalmanRnoise = 4.0f;
+	private static float kalmanQnoise = 0.00125f;
+	private static float kalmanRnoise = 10.0f;
 	private static float kalmanGain = 1.0f;
 	private static float kalmanPerror = 20.0f;
 	private static float kalmanX = 0.0f;
