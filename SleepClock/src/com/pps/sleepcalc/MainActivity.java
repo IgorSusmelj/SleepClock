@@ -68,7 +68,7 @@ public class MainActivity extends Activity implements TimePicker.OnTimeChangedLi
         //load default values for each UI element in settings
 		SharedPreferences settings = getSharedPreferences(SHARED_PREF_NAME,0);
 		triggerDelay.setText(settings.getString("triggerDelay", "1000"));
-		gyroSensorTrigger.setText(settings.getString("gyroSensorTrigger", "0.1"));
+		gyroSensorTrigger.setText(settings.getString("gyroSensorTrigger", "0.005"));
 		kalmanGain.setText(settings.getString("kalmanGain", "0.1"));
 		sensorPrecisionSwitch.setChecked(settings.getBoolean("sensorPrecisionSwitch", false));
 		
