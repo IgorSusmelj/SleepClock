@@ -57,9 +57,9 @@ public class sensorService extends Service implements SensorEventListener {
 	
 	
 	//the gain of the different gyro axes
-	private static float gyroXgain = 0.1f;
-	private static float gyroYgain = 0.7f;
-	private static float gyroZgain = 0.2f;
+	private static float gyroXgain = 0.4f;
+	private static float gyroYgain = 0.4f;
+	private static float gyroZgain = 0.1f;
 	
 	//sensor data buffer for computing average
 	private final static int SensorDataBuffMax=1000; //change this value for better average values
@@ -292,6 +292,7 @@ public class sensorService extends Service implements SensorEventListener {
 
 				
 				if((gyroCount-lastGyroOut)>triggerDelay){
+					lastGyroOut = gyroCount;
 					if(usableData>gyroSensorTrigger){
 						/*
 						Intent mainApp = new Intent(this, MainActivity.class);
@@ -309,7 +310,7 @@ public class sensorService extends Service implements SensorEventListener {
 							wakeuptime.write((DateFormat.getTimeInstance(DateFormat.SHORT).format(new Date())+",").getBytes());
 						}
 
-						lastGyroOut = gyroCount;
+					
 						resGyroOut.write((DateFormat.getTimeInstance(DateFormat.SHORT).format(new Date())+","+usableData+";").getBytes());
 						Log.e("SleepCalcServiceTag", "Motion detected by gyro: "+usableData);
 					}
