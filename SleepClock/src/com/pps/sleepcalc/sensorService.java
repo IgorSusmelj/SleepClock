@@ -180,6 +180,9 @@ public class sensorService extends Service implements SensorEventListener {
 		kalmanQnoise = extras.getFloat("kalmanQnoise");
 		kalmanRnoise = extras.getFloat("kalmanRnoise");
 		
+		Log.e("SleepCalcServiceTag", "kalmanQnoise: "+kalmanQnoise);
+		Log.e("SleepCalcServiceTag", "kalmanRnoise: "+kalmanRnoise);
+		
 		
 		if(extras.getBoolean("sensorPrecisionSwitch")){
 			sensorUpdateInterval = SENSOR_PRECISION_HIGH;
@@ -290,7 +293,9 @@ public class sensorService extends Service implements SensorEventListener {
 				y=event.values[1];
 				z=event.values[2];
 				
-				float usableData = kalman(makeUsable(x,y,z));
+				float tmp_data = makeUsable(x,y,z);
+				
+				float usableData = kalman(tmp_data);
 
 				
 				if((gyroCount-lastGyroOut)>triggerDelay){
