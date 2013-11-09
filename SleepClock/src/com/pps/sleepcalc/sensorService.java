@@ -59,7 +59,7 @@ public class sensorService extends Service implements SensorEventListener {
 	//the gain of the different gyro axes
 	private static float gyroXgain = 0.4f;
 	private static float gyroYgain = 0.4f;
-	private static float gyroZgain = 0.1f;
+	private static float gyroZgain = 0.2f;
 	
 	//sensor data buffer for computing average
 	private final static int SensorDataBuffMax=1000; //change this value for better average values
@@ -470,7 +470,8 @@ public class sensorService extends Service implements SensorEventListener {
 		kalmanPerror += kalmanQnoise;
 		kalmanGain = kalmanPerror/(kalmanPerror+kalmanRnoise);
 		kalmanPerror = (1-kalmanGain) * kalmanPerror;
-		return kalmanX + kalmanGain * (x-kalmanX);
+		kalmanX = kalmanX + kalmanGain * (x-kalmanX);
+		return kalmanX;
 		//return x*gain+(1-gain)*lastX;
 	}
 	
