@@ -73,8 +73,8 @@ public class MainActivity extends Activity implements TimePicker.OnTimeChangedLi
 		SharedPreferences settings = getSharedPreferences(SHARED_PREF_NAME,0);
 		triggerDelay.setText(settings.getString("triggerDelay", "1000"));
 		gyroSensorTrigger.setText(settings.getString("gyroSensorTrigger", "0.005"));
-		kalmanRnoise.setText(settings.getString("kalmanRnoise", "0.0125"));
-		kalmanQnoise.setText(settings.getString("kalmanQnoise", "80.0"));
+		kalmanRnoise.setText(settings.getString("kalmanRnoise", "80.0"));
+		kalmanQnoise.setText(settings.getString("kalmanQnoise", "0.0125"));
 
 		sensorPrecisionSwitch.setChecked(settings.getBoolean("sensorPrecisionSwitch", false));
 		
