@@ -177,7 +177,6 @@ public class sensorService extends Service implements SensorEventListener {
 		
 		triggerDelay = extras.getInt("triggerDelay");
 		gyroSensorTrigger = extras.getFloat("gyroSensorTrigger");
-		kalmanGain = extras.getFloat("kalmanGain");
 		
 		if(extras.getBoolean("sensorPrecisionSwitch")){
 			sensorUpdateInterval = SENSOR_PRECISION_HIGH;

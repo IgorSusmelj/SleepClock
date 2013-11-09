@@ -34,7 +34,10 @@ public class MainActivity extends Activity implements TimePicker.OnTimeChangedLi
 
 	private EditText triggerDelay;
 	private EditText gyroSensorTrigger;
-	private EditText kalmanGain;
+	private EditText kalmanRnoise;
+	private EditText kalmanQnoise;
+	
+
 	private SeekBar wakeupDeltaBar;
 	private TextView wakeupDelta;
 	private Switch sensorPrecisionSwitch;
@@ -59,7 +62,8 @@ public class MainActivity extends Activity implements TimePicker.OnTimeChangedLi
         
         triggerDelay = (EditText) findViewById(R.id.triggerDelay);
         gyroSensorTrigger = (EditText) findViewById(R.id.gyroSensorTrigger);
-        kalmanGain = (EditText) findViewById(R.id.kalmanGain);
+        kalmanRnoise = (EditText) findViewById(R.id.kalmanRnoise);
+        kalmanQnoise = (EditText) findViewById(R.id.kalmanQnoise);
 
         
         sensorPrecisionSwitch = (Switch) findViewById(R.id.sensorPrecisionSwitch);
@@ -69,7 +73,9 @@ public class MainActivity extends Activity implements TimePicker.OnTimeChangedLi
 		SharedPreferences settings = getSharedPreferences(SHARED_PREF_NAME,0);
 		triggerDelay.setText(settings.getString("triggerDelay", "1000"));
 		gyroSensorTrigger.setText(settings.getString("gyroSensorTrigger", "0.005"));
-		kalmanGain.setText(settings.getString("kalmanGain", "0.1"));
+		kalmanRnoise.setText(settings.getString("kalmanRnoise", "0.0125"));
+		kalmanQnoise.setText(settings.getString("kalmanQnoise", "80.0"));
+
 		sensorPrecisionSwitch.setChecked(settings.getBoolean("sensorPrecisionSwitch", false));
 		
         
@@ -86,7 +92,8 @@ public class MainActivity extends Activity implements TimePicker.OnTimeChangedLi
 				SharedPreferences.Editor editor = settings.edit();
 				editor.putString("triggerDelay", triggerDelay.getText().toString());
 				editor.putString("gyroSensorTrigger", gyroSensorTrigger.getText().toString());
-				editor.putString("kalmanGain", kalmanGain.getText().toString());
+				editor.putString("kalmanRnoise", kalmanRnoise.getText().toString());
+				editor.putString("kalmanQnoise", kalmanQnoise.getText().toString());
 				editor.putBoolean("sensorPrecisionSwitch", sensorPrecisionSwitch.isChecked());
 				editor.commit();
 			}
@@ -126,10 +133,12 @@ public class MainActivity extends Activity implements TimePicker.OnTimeChangedLi
     	//extras from settings
     	sensorService.putExtra("triggerDelay", Integer.valueOf(triggerDelay.getText().toString()));
     	sensorService.putExtra("gyroSensorTrigger", Float.valueOf(gyroSensorTrigger.getText().toString()));
-    	sensorService.putExtra("kalmanGain", Float.valueOf(kalmanGain.getText().toString()));
+    	sensorService.putExtra("kalmanRnoise", Float.valueOf(kalmanRnoise.getText().toString()));
+    	sensorService.putExtra("kalmanQnoise", Float.valueOf(kalmanQnoise.getText().toString()));
+    	
     	sensorService.putExtra("sensorPrecisionSwitch", Boolean.valueOf(sensorPrecisionSwitch.isChecked()));
 
-    	
+    
     	startService(sensorService);
     	
     	//Toast and log output for user/developper notification
@@ -149,8 +158,7 @@ public class MainActivity extends Activity implements TimePicker.OnTimeChangedLi
     public void resetClicked(View view){
     	//reset fields
     	triggerDelay.setText("1000");
-    	gyroSensorTrigger.setText("0.1");
-    	kalmanGain.setText("0.1");
+    	gyroSensorTrigger.setText("0.03");
     	sensorPrecisionSwitch.setChecked(false);
     	
     	//update config
@@ -158,7 +166,8 @@ public class MainActivity extends Activity implements TimePicker.OnTimeChangedLi
 		SharedPreferences.Editor editor = settings.edit();
 		editor.putString("triggerDelay", triggerDelay.getText().toString());
 		editor.putString("gyroSensorTrigger", gyroSensorTrigger.getText().toString());
-		editor.putString("kalmanGain", kalmanGain.getText().toString());
+		editor.putString("kalmanRnoise", kalmanRnoise.getText().toString());
+		editor.putString("kalmanQnoise", kalmanQnoise.getText().toString());
 		editor.putBoolean("sensorPrecisionSwitch", sensorPrecisionSwitch.isChecked());
 		editor.commit();  	
     	Log.e("SleepCalcTag", "reset clicked");
