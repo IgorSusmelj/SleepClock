@@ -41,6 +41,8 @@ public class sensorService extends Service implements SensorEventListener {
 	private final static int SENSOR_PRECISION_LOW = 500000;
 	private final static int SENSOR_PRECISION_HIGH= 50000;
 	
+	private final static int TIME_LOG_DELAY = 1000;
+	
 	private int sensorUpdateInterval = SENSOR_PRECISION_LOW;
 	
 	
@@ -109,6 +111,9 @@ public class sensorService extends Service implements SensorEventListener {
 	//counter for the data buffer
 	private int LinearDataCounter = 0;
 	private int GyroDataCounter = 0;
+	
+	//counter for timelog
+	private int timelogCount=TIME_LOG_DELAY;
 	
 	//buffer for the sensor data
 	private float[] linearDataBuffX = new float[SensorDataBuffMax];
@@ -182,6 +187,7 @@ public class sensorService extends Service implements SensorEventListener {
 		
 		Log.e("SleepCalcServiceTag", "kalmanQnoise: "+kalmanQnoise);
 		Log.e("SleepCalcServiceTag", "kalmanRnoise: "+kalmanRnoise);
+		Log.e("SleepCalcServiceTag", "gyroSensorTrigger: "+gyroSensorTrigger);
 		
 		
 		if(extras.getBoolean("sensorPrecisionSwitch")){
@@ -299,7 +305,7 @@ public class sensorService extends Service implements SensorEventListener {
 
 				
 				if((gyroCount-lastGyroOut)>triggerDelay){
-					lastGyroOut = gyroCount;
+					
 					if(usableData>gyroSensorTrigger){
 						/*
 						Intent mainApp = new Intent(this, MainActivity.class);
@@ -316,12 +322,12 @@ public class sensorService extends Service implements SensorEventListener {
 						if(wakeupCalendar.before(calendar)){
 							wakeuptime.write((DateFormat.getTimeInstance(DateFormat.SHORT).format(new Date())+",").getBytes());
 						}
-
+						lastGyroOut = gyroCount;
 					
 						resGyroOut.write((DateFormat.getTimeInstance(DateFormat.SHORT).format(new Date())+","+usableData+";").getBytes());
 						Log.e("SleepCalcServiceTag", "Motion detected by gyro: "+usableData);
 					}
-					timeLogOut.write((DateFormat.getTimeInstance(DateFormat.SHORT).format(new Date())+","+gyroCount+";").getBytes());
+					
 				}
 				
 
@@ -362,11 +368,18 @@ public class sensorService extends Service implements SensorEventListener {
 					
 				}*/
 				
+				
 				gyroOut.write((Float.toString(x)+","+Float.toString(y)+","+Float.toString(z)+";").getBytes());
 				gyroFilteredOut.write((Float.toString(usableData)+";").getBytes());
 				
 				gyroCount++;
 			
+				if(timelogCount<=0){
+					timeLogOut.write((DateFormat.getTimeInstance(DateFormat.SHORT).format(new Date())+","+gyroCount+";").getBytes());
+					timelogCount=TIME_LOG_DELAY;
+				}
+				
+				timelogCount--;
 				
 				//set perTimeCounter down and check if 0 or below
 				/*timeLogCounter--;
