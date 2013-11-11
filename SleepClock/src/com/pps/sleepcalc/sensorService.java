@@ -19,6 +19,7 @@ import android.os.Environment;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
+import android.os.Vibrator;
 
 import android.app.AlarmManager;
 import android.app.IntentService;
@@ -73,6 +74,12 @@ public class sensorService extends Service implements SensorEventListener {
 	private PowerManager pm;
 	private PowerManager.WakeLock wakelock;
 	
+	private AlarmManager alarmmanager;
+	
+	private Calendar wakeupCalendar;
+	
+	//vibrator
+	Vibrator vibrator;
 	
 	//my sensors
 	private Sensor mGyro;
@@ -135,9 +142,7 @@ public class sensorService extends Service implements SensorEventListener {
 	private float gyroAverageZ=0.0f;
 	
 	
-	private AlarmManager alarmmanager;
-	
-	private Calendar wakeupCalendar;
+
 	
 	private boolean wakeMeUp=false;
 	private int wakeupHours;
@@ -252,6 +257,9 @@ public class sensorService extends Service implements SensorEventListener {
 		wakelock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.ON_AFTER_RELEASE, "wake tag");
 		
 		wakelock.acquire();
+		
+		//init vibrator
+		vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 		
 		return Service.START_STICKY;
 	}
