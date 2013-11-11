@@ -188,7 +188,7 @@ public class sensorService extends Service implements SensorEventListener {
 		Log.e("SleepCalcServiceTag", "kalmanQnoise: "+kalmanQnoise);
 		Log.e("SleepCalcServiceTag", "kalmanRnoise: "+kalmanRnoise);
 		Log.e("SleepCalcServiceTag", "gyroSensorTrigger: "+gyroSensorTrigger);
-		
+		Log.e("SleepCalcServiceTag", "triggerDelay: "+triggerDelay);
 		
 		if(extras.getBoolean("sensorPrecisionSwitch")){
 			sensorUpdateInterval = SENSOR_PRECISION_HIGH;
@@ -307,6 +307,7 @@ public class sensorService extends Service implements SensorEventListener {
 				if((gyroCount-lastGyroOut)>triggerDelay){
 					
 					if(usableData>gyroSensorTrigger){
+						resGyroOut.write((DateFormat.getTimeInstance(DateFormat.SHORT).format(new Date())+","+usableData+";").getBytes());
 						/*
 						Intent mainApp = new Intent(this, MainActivity.class);
 						mainApp.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -324,7 +325,7 @@ public class sensorService extends Service implements SensorEventListener {
 						}
 						lastGyroOut = gyroCount;
 					
-						resGyroOut.write((DateFormat.getTimeInstance(DateFormat.SHORT).format(new Date())+","+usableData+";").getBytes());
+						
 						Log.e("SleepCalcServiceTag", "Motion detected by gyro: "+usableData);
 					}
 					
