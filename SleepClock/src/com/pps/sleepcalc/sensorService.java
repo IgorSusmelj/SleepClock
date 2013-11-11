@@ -174,6 +174,9 @@ public class sensorService extends Service implements SensorEventListener {
 		wakeupCalendar.set(Calendar.MINUTE, wakeupMinutes);
 
 		
+		//activate wake up
+		wakeMeUp=true;
+		
 		if(wakeupCalendar.after(Calendar.getInstance())){
 			Log.e("SleepCalcServiceTag", "Wake you up today!");
 		}else{
@@ -316,20 +319,30 @@ public class sensorService extends Service implements SensorEventListener {
 					
 					if(usableData>gyroSensorTrigger){
 						resGyroOut.write((DateFormat.getTimeInstance(DateFormat.SHORT).format(new Date())+","+usableData+";").getBytes());
-						/*
-						Intent mainApp = new Intent(this, MainActivity.class);
-						mainApp.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-						PendingIntent pintent = PendingIntent.getActivity(this, 0, mainApp, 0);
-						
-				    	//this.startActivity(mainApp);
-						alarmmanager.set(AlarmManager.RTC_WAKEUP,1, pintent);
-						
-						pm.newWakeLock(PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.ON_AFTER_RELEASE, "wake tag").acquire(5000);
-						*/
+
 						
 						Calendar calendar = Calendar.getInstance();
-						if(wakeupCalendar.before(calendar)){
+						if(wakeMeUp&&wakeupCalendar.before(calendar)){
+							//code for wakeup routine goes here
+							
+							//log wakeup time
 							wakeuptime.write((DateFormat.getTimeInstance(DateFormat.SHORT).format(new Date())+",").getBytes());
+							
+							//start vibrator until service gets closed
+							long[] pattern = {200,1000,1000};
+							vibrator.vibrate(pattern, 1);
+							
+							
+							Intent mainApp = new Intent(this, MainActivity.class);
+							mainApp.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+							PendingIntent pintent = PendingIntent.getActivity(this, 0, mainApp, 0);
+							
+					    	//this.startActivity(mainApp);
+							alarmmanager.set(AlarmManager.RTC_WAKEUP,1, pintent);
+							
+							pm.newWakeLock(PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.ON_AFTER_RELEASE, "wake tag").acquire(50);
+							
+							wakeMeUp=false;
 						}
 						lastGyroOut = gyroCount;
 					
@@ -520,7 +533,12 @@ public class sensorService extends Service implements SensorEventListener {
 	@Override
 	public void onDestroy(){
 		
+		//stop the vibrator from vibrating
+		vibrator.cancel();
+		
+		//realease wakelock
 		wakelock.release();
+		
 		//unregister sensor so no more events gets triggered
 		mSensorManager.unregisterListener(this);
 		
