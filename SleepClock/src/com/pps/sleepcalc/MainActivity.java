@@ -124,6 +124,11 @@ public class MainActivity extends Activity implements TimePicker.OnTimeChangedLi
         return true;
     }
     
+    public void showChartClicked(View view){
+    	
+    	
+    }
+    
     public void startClicked(View view){
     	//create and start service
     	sensorService = new Intent(this, sensorService.class);

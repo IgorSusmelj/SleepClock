@@ -340,7 +340,7 @@ public class sensorService extends Service implements SensorEventListener {
 					    	//this.startActivity(mainApp);
 							alarmmanager.set(AlarmManager.RTC_WAKEUP,1, pintent);
 							
-							pm.newWakeLock(PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.ON_AFTER_RELEASE, "wake tag").acquire(50);
+							pm.newWakeLock(PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.ON_AFTER_RELEASE, "wake tag").acquire(800);
 							
 							wakeMeUp=false;
 						}
