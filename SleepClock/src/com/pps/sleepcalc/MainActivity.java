@@ -126,7 +126,8 @@ public class MainActivity extends Activity implements TimePicker.OnTimeChangedLi
     
     public void showChartClicked(View view){
     	
-    	
+    	Intent intent = new Intent(this, showGraphActivity.class);
+    	startActivity(intent);
     }
     
     public void startClicked(View view){

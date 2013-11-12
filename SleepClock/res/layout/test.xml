@@ -22,6 +22,83 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" >
 
+            <RelativeLayout
+                android:id="@+id/tabMain"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" >
+
+                <Button
+                    android:id="@+id/start_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBaseline="@+id/stop_button"
+                    android:layout_alignBottom="@+id/stop_button"
+                    android:layout_alignParentLeft="true"
+                    android:layout_marginLeft="16dp"
+                    android:onClick="startClicked"
+                    android:text="@string/start" />
+
+                <Button
+                    android:id="@+id/stop_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginBottom="15dp"
+                    android:layout_marginRight="18dp"
+                    android:onClick="stopClicked"
+                    android:text="@string/stop" />
+
+                <TimePicker
+                    android:id="@+id/timePicker"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="71dp" />
+
+                <SeekBar
+                    android:id="@+id/wakupDeltaBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignLeft="@+id/timePicker"
+                    android:layout_alignRight="@+id/timePicker"
+                    android:layout_below="@+id/wakeupDelta"
+                    android:layout_marginTop="26dp"
+                    android:max="12"
+                    android:progress="6" />
+
+                <TextView
+                    android:id="@+id/wakeupDelta"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/timePicker"
+                    android:layout_marginTop="22dp"
+                    android:layout_toLeftOf="@+id/stop_button"
+                    android:text="0 min" />
+
+                <TextView
+                    android:id="@+id/textView2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBaseline="@+id/wakeupDelta"
+                    android:layout_alignBottom="@+id/wakeupDelta"
+                    android:layout_alignLeft="@+id/timePicker"
+                    android:text="Wakeup delta:" />
+
+                <Button
+                    android:id="@+id/showChart"
+                    style="?android:attr/buttonStyleSmall"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_above="@+id/start_button"
+                    android:layout_alignLeft="@+id/start_button"
+                    android:layout_marginBottom="15dp"
+                    android:onClick="showChartClicked"
+                    android:text="show Chart" />
+
+            </RelativeLayout>
+
             <LinearLayout
                 android:id="@+id/tabSettings"
                 android:layout_width="match_parent"
@@ -172,71 +249,6 @@
                 </LinearLayout>
 
             </LinearLayout>
-
-            <RelativeLayout
-                android:id="@+id/tabMain"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" >
-
-                <Button
-                    android:id="@+id/start_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignBaseline="@+id/stop_button"
-                    android:layout_alignBottom="@+id/stop_button"
-                    android:layout_alignParentLeft="true"
-                    android:layout_marginLeft="16dp"
-                    android:onClick="startClicked"
-                    android:text="@string/start" />
-
-                <Button
-                    android:id="@+id/stop_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentBottom="true"
-                    android:layout_alignParentRight="true"
-                    android:layout_marginBottom="15dp"
-                    android:layout_marginRight="18dp"
-                    android:onClick="stopClicked"
-                    android:text="@string/stop" />
-
-                <TimePicker
-                    android:id="@+id/timePicker"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentTop="true"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginTop="71dp" />
-
-                <SeekBar
-                    android:id="@+id/wakupDeltaBar"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_alignLeft="@+id/timePicker"
-                    android:layout_alignRight="@+id/timePicker"
-                    android:layout_below="@+id/wakeupDelta"
-                    android:layout_marginTop="26dp"
-                    android:max="12"
-                    android:progress="6" />
-
-                <TextView
-                    android:id="@+id/wakeupDelta"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/timePicker"
-                    android:layout_marginTop="22dp"
-                    android:layout_toLeftOf="@+id/stop_button"
-                    android:text="0 min" />
-
-                <TextView
-                    android:id="@+id/textView2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignBaseline="@+id/wakeupDelta"
-                    android:layout_alignBottom="@+id/wakeupDelta"
-                    android:layout_alignLeft="@+id/timePicker"
-                    android:text="Wakeup delta:" />
-            </RelativeLayout>
 
         </FrameLayout>
 
