@@ -19,7 +19,8 @@
         <activity
             android:name="com.pps.sleepcalc.MainActivity"
             android:launchMode="singleInstance"
-            android:label="@string/app_name" >
+            android:label="@string/app_name" 
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -29,6 +30,7 @@
         <activity
             android:name="com.pps.sleepcalc.showGraphActivity"
             android:launchMode="singleInstance"
+            android:screenOrientation="landscape"
             android:label="@string/app_name" >
         </activity>
         <service android:name="com.pps.sleepcalc.sensorService"></service>
