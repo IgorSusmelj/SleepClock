@@ -17,7 +17,8 @@ public class showGraphActivity extends Activity {
 		final WebView webview = (WebView) findViewById(R.id.webview);
 		
 		webview.getSettings().setJavaScriptEnabled(true);
-		//webview.getSettings().set
+		webview.getSettings().setAllowUniversalAccessFromFileURLs(true);
+		webview.setInitialScale(100);
 		
 		webview.loadUrl("file:///android_asset/test.html");
     }
